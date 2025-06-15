@@ -9,6 +9,17 @@ Welcome to my cybersecurity homelab! This repo contains real-world labs and exer
 - Web Application Attacks: SQLi, XSS, IDOR
 - Tools Used: Nmap, Burp Suite, Wireshark, Nikto, SQLMap, etc.
 
+## 🛡️ Defensive Security Labs
+
+This section focuses on defensive cybersecurity practices to complement offensive testing. It includes tools and environments for:
+
+- **Network Monitoring**: Analyze traffic with Wireshark, Zeek, and Suricata.
+- **Endpoint Protection**: Deploy and configure EDR/AV solutions.
+- **SIEM Setup**: Install and configure Security Onion, Wazuh, or ELK.
+- **Threat Hunting**: Use Sigma rules, Sysmon, and HELK for detection.
+
+Each subfolder contains setup guides, configuration files, and example labs.
+
 ## Screenshots & Evidence
 All critical steps include screenshots or terminal output.
 
@@ -16,7 +27,7 @@ All critical steps include screenshots or terminal output.
 See folders by category. Each has its own detailed markdown write-up.
 
 ## Goal
-To showcase offensive security skills in a structured, reproducible format.
+To showcase offensive and defensive security skills in a structured, reproducible format.
 
 ## Contact
 - GitHub: [basil9099]
