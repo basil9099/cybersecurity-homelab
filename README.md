@@ -31,4 +31,4 @@ To showcase offensive and defensive security skills in a structured, reproducibl
 
 ## Contact
 - GitHub: [basil9099]
-- LinkedIn: [yourlinkedin]
+- LinkedIn: [www.linkedin.com/in/angus-dawson-92b035249]
