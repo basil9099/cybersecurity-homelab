@@ -30,5 +30,5 @@ See folders by category. Each has its own detailed markdown write-up.
 To showcase offensive and defensive security skills in a structured, reproducible format.
 
 ## Contact
-- GitHub: [basil9099]
-- LinkedIn: [www.linkedin.com/in/angus-dawson-92b035249]
+- GitHub: basil9099
+- LinkedIn: www.linkedin.com/in/angus-dawson-92b035249
