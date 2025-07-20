@@ -1,0 +1,35 @@
+flowchart TB
+  %% ─────────── PERIMETER ───────────
+  subgraph "Internet / Home Router"
+    ISP["🌐 192.168.x.x (DHCP)"]
+  end
+
+  LabHost["💻 Cybersecurity Home-Lab<br>(VMware Workstation)"]
+  FW["🔶 pfSense<br>10.10.10.1<br>vmnet0 ↔ WAN<br>vmnet2 ↔ LAN"]
+
+  ISP --> LabHost --> FW
+
+  %% ─────────── LAB LAN ───────────
+  subgraph "LabLAN (vmnet2) 10.10.10.0/24"
+    direction LR
+    spacerL[ ]:::invis
+    Kali["💻 Kali<br>10.10.10.100<br>(+ NAT eth1)"]
+    Win10["🖥️ Win10 AD & Splunk<br>10.10.10.10"]
+    Meta["🐧 Metasploitable 2<br>10.10.10.120"]
+    Ubuntu["🛡️ Ubuntu Blue Team<br>10.10.10.150"]
+    spacerR[ ]:::invis
+  end
+
+  FW --> Kali
+  FW --> Win10
+  FW --> Meta
+  FW --> Ubuntu
+
+  %% ─────────── MGMT NET (optional) ───────────
+  subgraph "vmnet3 – 10.10.20.0/24  (optional)"
+    NoteMgmt["📂 future mgmt VMs"]
+  end
+  FW -. optional .- NoteMgmt
+
+  %% invisible spacers
+  classDef invis fill:none,stroke:none,stroke-width:0;
