@@ -32,3 +32,13 @@ To showcase offensive and defensive security skills in a structured, reproducibl
 ## Contact
 - GitHub: basil9099
 - LinkedIn: www.linkedin.com/in/angus-dawson-92b035249
+
+---
+
+## 🧠 Additional Practice
+
+I've also been sharpening my offensive security skills through Hack The Box challenges:
+
+🔗 [View my Hack The Box profile](https://app.hackthebox.com/profile/basil9099)
+
+> These challenges cover enumeration, privilege escalation, web exploitation, and more — complementing the defensive engineering in this homelab project.
