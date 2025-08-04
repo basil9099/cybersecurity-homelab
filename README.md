@@ -1,44 +1,73 @@
-# 🛡️ Cybersecurity Homelab Documentation
+# 🛡️ Cybersecurity Homelab
 
-Welcome to my cybersecurity homelab! This repo contains real-world labs and exercises that demonstrate my hands-on skills in offensive security, penetration testing, and vulnerability assessments.
+Welcome to my personal cybersecurity homelab — a practical, hands-on space where I simulate real-world attacks, build detection pipelines, and automate analysis to sharpen my offensive and defensive security skills.
 
-##  What’s Inside
-- Exploits: Metasploit, manual RCE, reverse shells
-- Enumeration: SMB, LDAP, DNS, and Web recon
-- Privilege Escalation: Linux and Windows
-- Web Application Attacks: SQLi, XSS, IDOR
-- Tools Used: Nmap, Burp Suite, Wireshark, Nikto, SQLMap, etc.
-
-## 🛡️ Defensive Security Labs
-
-This section focuses on defensive cybersecurity practices to complement offensive testing. It includes tools and environments for:
-
-- **Network Monitoring**: Analyze traffic with Wireshark, Zeek, and Suricata.
-- **Endpoint Protection**: Deploy and configure EDR/AV solutions.
-- **SIEM Setup**: Install and configure Security Onion, Wazuh, or ELK.
-- **Threat Hunting**: Use Sigma rules, Sysmon, and HELK for detection.
-
-Each subfolder contains setup guides, configuration files, and example labs.
-
-## Screenshots & Evidence
-All critical steps include screenshots or terminal output.
-
-## Structure
-See folders by category. Each has its own detailed markdown write-up.
-
-## Goal
-To showcase offensive and defensive security skills in a structured, reproducible format.
-
-## Contact
-- GitHub: basil9099
-- LinkedIn: www.linkedin.com/in/angus-dawson-92b035249
+> ⚠️ **Work in Progress**: I'm using this repository as a personal training ground to build technical cybersecurity skills, with the hope of transitioning into a professional security role. Feedback, learning suggestions, and collaborations are always welcome!
 
 ---
 
-## 🧠 Additional Practice
+## 📁 Repo Structure
 
-I've also been sharpening my offensive security skills through Hack The Box challenges:
+| Path                            | Description                                         |
+|---------------------------------|-----------------------------------------------------|
+| `projects/`                     | Core security lab projects and tools                |
+| `projects/splunk/`              | SIEM setup, dashboarding, log analysis              |
+| `projects/honeypot/`            | Lightweight TCP honeypot for trap-based detection   |
+| `projects/anomaly-detector/`    | Python ML script for anomaly detection on logs      |
+| `defensive-security/`          | Legacy lab content for detection & response         |
+| `docs/`                         | Diagrams, architecture notes                        |
+| `tools/`                        | Helper scripts and utilities                        |
+| `offensive-security/`          | Legacy lab content for exploits, payloads and enumeration        |
+| `hardware-pentesting/`          | Labs and tools focused on physical device exploitation (e.g., Flipper Zero, USB attacks)       |
+| `troubleshooting/`            | Notes, fixes, and debugging steps for common lab issues |
 
-🔗 [View my Hack The Box profile](https://app.hackthebox.com/profile/basil9099)
+---
 
-> These challenges cover enumeration, privilege escalation, web exploitation, and more — complementing the defensive engineering in this homelab project.
+## 💥 Offensive Security Labs
+
+Hands-on red teaming scenarios focusing on:
+
+- 🔍 Enumeration: SMB, LDAP, DNS, Web Recon
+- 🎯 Exploitation: Metasploit, manual RCEs, reverse shells
+- ⬆️ Privilege Escalation: Linux/Windows via kernel, misconfigs
+- 🌐 Web Attacks: SQLi, XSS, IDOR, command injection
+- 🛠️ Tools: Nmap, Burp Suite, Wireshark, Nikto, SQLMap, etc.
+
+---
+
+## 🛡️ Defensive Security Labs
+
+Complementing offensive skills with:
+
+- 📡 Network Monitoring: Wireshark, Zeek, Suricata
+- 🔒 Endpoint Protection: Sysmon, AV/EDR testing
+- 📊 SIEM Setup: Splunk, Wazuh, ELK
+- 🎯 Threat Hunting: Sigma, YARA, HELK
+- 🔍 Detection Engineering: custom SPL queries, alerting rules
+
+---
+
+## 🤖 Automation Projects
+
+- 📈 Anomaly Detection Script (Python + scikit-learn)
+- 🪤 Honeypot on TCP Port 8080 with logging
+- 🧠 Integration with Splunk log exports for offline analysis
+
+---
+
+## 🚀 Why This Repo?
+
+- ✍️ Documentation of real-world CTF-style exercises
+- 💡 Custom tools and scripts built during engagements
+- 🧪 A living portfolio of practical cybersecurity experience
+
+---
+
+## 🔗 Related
+
+- [Hack The Box Profile](https://app.hackthebox.com/profile/basil9099)  
+- [LinkedIn](https://www.linkedin.com/in/angus-dawson-92b035249)
+
+---
+
+> 📌 Note: All systems are hosted internally in an isolated lab environment. This lab is for educational and training purposes only.
