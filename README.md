@@ -11,10 +11,13 @@ Welcome to my personal cybersecurity homelab — a practical, hands-on space whe
 | Path                            | Description                                         |
 |---------------------------------|-----------------------------------------------------|
 | `projects/`                     | Core security lab projects and tools                |
-| `projects/splunk/`              | SIEM setup, dashboarding, log analysis              |
 | `projects/honeypot/`            | Lightweight TCP honeypot for trap-based detection   |
 | `projects/anomaly-detector/`    | Python ML script for anomaly detection on logs      |
 | `defensive-security/`          | Legacy lab content for detection & response         |
+| `defensive-security/splunk/`          | Splunk Enterprise configuration, data ingestion, dashboards, and detection engineering |
+| `defensive-security/pfsense-firewall/`| pfSense firewall setup, network segmentation, and traffic monitoring configurations     |
+| `defensive-security/network-monitoring/`       | Labs using Wireshark, Zeek, and Suricata for deep packet inspection and threat visibility |
+| `defensive-security/windows-server-with-AD/`   | Active Directory setup with DNS, DHCP, and GPOs for enterprise-grade lab simulation       |
 | `docs/`                         | Diagrams, architecture notes                        |
 | `tools/`                        | Helper scripts and utilities                        |
 | `offensive-security/`          | Legacy lab content for exploits, payloads and enumeration        |
