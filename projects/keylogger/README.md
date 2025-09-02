@@ -36,9 +36,9 @@ E:
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/basil9099/cybersecurity-homelab.git
+git clone https://github.com/basil19099/cybersecurity-homelab.git
 cd projects/keylogger
+
 ```
 
 ### 2. Set Up Environment (Python 3.12 Required)
@@ -87,9 +87,3 @@ You can find sample logs and screenshots in the `sample_output/` folder.
 
 MIT License — see [LICENSE](../../LICENSE) for more information.
 
----
-
-## 🙏 Credits
-
-Built by **[Your Name or GitHub Handle]**  
-Inspired by real-world TTPs for educational replication in safe environments.
