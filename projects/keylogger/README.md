@@ -36,9 +36,9 @@ E:
 
 ### 1. Clone the Repository
 
-```bash
-git clone https://github.com/YOUR_USERNAME/usb-keylogger.git
-cd usb-keylogger
+git clone https://github.com/basil19099/cybersecurity-homelab.git
+cd projects/keylogger
+
 ```
 
 ### 2. Set Up Environment (Python 3.12 Required)
@@ -86,3 +86,4 @@ You can find sample logs and screenshots in the `sample_output/` folder.
 ## 📄 License
 
 MIT License — see [LICENSE](../../LICENSE) for more information.
+
