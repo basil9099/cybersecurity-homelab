@@ -95,3 +95,6 @@ Blue team capabilities developed to complement offensive skills:
 ---
 
 > **Disclaimer:** All systems are hosted internally in an isolated lab environment. This repository is intended for educational and training purposes only.
+
+> [!NOTE]
+> **AI Use Disclaimer** — Portions of this repository, including code, documentation, and configurations, may have been drafted or refined with the assistance of AI tools (e.g. Claude). All AI-generated content has been reviewed, tested, and validated by the repository author. AI assistance is used as a productivity and learning aid; it does not replace understanding of the underlying concepts, and any techniques or tools documented here are the result of hands-on experimentation in an isolated lab environment.
