@@ -1,76 +1,95 @@
-# 🛡️ Cybersecurity Homelab
+# Cybersecurity Homelab
 
-Welcome to my personal cybersecurity homelab — a practical, hands-on space where I simulate real-world attacks, build detection pipelines, and automate analysis to sharpen my offensive and defensive security skills.
+> A practical, hands-on lab environment for simulating real-world attacks, building detection pipelines, and developing offensive and defensive security skills.
 
-> ⚠️ **Work in Progress**: I'm using this repository as a personal training ground to build technical cybersecurity skills, with the hope of transitioning into a professional security role. Feedback, learning suggestions, and collaborations are always welcome!
-
----
-
-## 📁 Repo Structure
-
-| Path                            | Description                                         |
-|---------------------------------|-----------------------------------------------------|
-| `projects/`                     | Core security lab projects and tools                |
-| `projects/honeypot/`            | Lightweight TCP honeypot for trap-based detection   |
-| `projects/anomaly-detector/`    | Python ML script for anomaly detection on logs      |
-| `defensive-security/`          | Legacy lab content for detection & response         |
-| `defensive-security/splunk/`          | Splunk Enterprise configuration, data ingestion, dashboards, and detection engineering |
-| `defensive-security/pfsense-firewall/`| pfSense firewall setup, network segmentation, and traffic monitoring configurations     |
-| `defensive-security/network-monitoring/`       | Labs using Wireshark, Zeek, and Suricata for deep packet inspection and threat visibility |
-| `defensive-security/windows-server-with-AD/`   | Active Directory setup with DNS, DHCP, and GPOs for enterprise-grade lab simulation       |
-| `docs/`                         | Diagrams, architecture notes                        |
-| `tools/`                        | Helper scripts and utilities                        |
-| `offensive-security/`          | Legacy lab content for exploits, payloads and enumeration        |
-| `hardware-pentesting/`          | Labs and tools focused on physical device exploitation (e.g., Flipper Zero, USB attacks)       |
-| `troubleshooting/`            | Notes, fixes, and debugging steps for common lab issues |
+> [!NOTE]
+> **Work in Progress** — This repository serves as a personal training ground for building technical cybersecurity skills with the goal of transitioning into a professional security role. Feedback, learning suggestions, and collaboration are always welcome.
 
 ---
 
-## 💥 Offensive Security Labs
+## Table of Contents
 
-Hands-on red teaming scenarios focusing on:
-
-- 🔍 Enumeration: SMB, LDAP, DNS, Web Recon
-- 🎯 Exploitation: Metasploit, manual RCEs, reverse shells
-- ⬆️ Privilege Escalation: Linux/Windows via kernel, misconfigs
-- 🌐 Web Attacks: SQLi, XSS, IDOR, command injection
-- 🛠️ Tools: Nmap, Burp Suite, Wireshark, Nikto, SQLMap, etc.
-
----
-
-## 🛡️ Defensive Security Labs
-
-Complementing offensive skills with:
-
-- 📡 Network Monitoring: Wireshark, Zeek, Suricata
-- 🔒 Endpoint Protection: Sysmon, AV/EDR testing
-- 📊 SIEM Setup: Splunk, Wazuh, ELK
-- 🎯 Threat Hunting: Sigma, YARA, HELK
-- 🔍 Detection Engineering: custom SPL queries, alerting rules
+- [Repository Structure](#repository-structure)
+- [Offensive Security Labs](#offensive-security-labs)
+- [Defensive Security Labs](#defensive-security-labs)
+- [Automation Projects](#automation-projects)
+- [Goals](#goals)
+- [Links](#links)
 
 ---
 
-## 🤖 Automation Projects
+## Repository Structure
 
-- 📈 Anomaly Detection Script (Python + scikit-learn)
-- 🪤 Honeypot on TCP Port 8080 with logging
-- 🧠 Integration with Splunk log exports for offline analysis
+```
+cybersecurity-homelab/
+├── projects/
+│   ├── honeypot/               # Lightweight TCP honeypot for trap-based detection
+│   └── anomaly-detector/       # Python ML script for anomaly detection on logs
+├── offensive-security/         # Exploits, payloads, and enumeration labs
+├── defensive-security/
+│   ├── splunk/                 # Splunk configuration, dashboards, and detection engineering
+│   ├── pfsense-firewall/       # pfSense setup, network segmentation, and traffic monitoring
+│   ├── network-monitoring/     # Wireshark, Zeek, and Suricata labs
+│   └── windows-server-with-AD/ # Active Directory setup with DNS, DHCP, and GPOs
+├── hardware-pentesting/        # Physical device exploitation (Flipper Zero, USB attacks)
+├── docs/                       # Diagrams and architecture notes
+├── tools/                      # Helper scripts and utilities
+└── troubleshooting/            # Notes, fixes, and debugging steps for common lab issues
+```
 
 ---
 
-## 🚀 Why This Repo?
+## Offensive Security Labs
 
-- ✍️ Documentation of real-world CTF-style exercises
-- 💡 Custom tools and scripts built during engagements
-- 🧪 A living portfolio of practical cybersecurity experience
+Hands-on red teaming scenarios covering the full attack lifecycle:
+
+| Category | Tools & Techniques |
+|---|---|
+| **Enumeration** | SMB, LDAP, DNS, web recon with Nmap, Nikto |
+| **Exploitation** | Metasploit, manual RCEs, reverse shells |
+| **Privilege Escalation** | Linux and Windows via kernel exploits and misconfigurations |
+| **Web Attacks** | SQLi, XSS, IDOR, command injection with Burp Suite, SQLMap |
+| **Network Analysis** | Traffic capture and analysis with Wireshark |
 
 ---
 
-## 🔗 Related
+## Defensive Security Labs
 
-- [Hack The Box Profile](https://app.hackthebox.com/profile/basil9099)  
+Blue team capabilities developed to complement offensive skills:
+
+| Category | Tools & Techniques |
+|---|---|
+| **Network Monitoring** | Wireshark, Zeek, Suricata for deep packet inspection |
+| **Endpoint Protection** | Sysmon configuration, AV/EDR testing |
+| **SIEM** | Splunk, Wazuh, ELK stack setup and tuning |
+| **Threat Hunting** | Sigma rules, YARA signatures, HELK |
+| **Detection Engineering** | Custom SPL queries and alerting rules |
+
+---
+
+## Automation Projects
+
+| Project | Description |
+|---|---|
+| **Anomaly Detection Script** | Python + scikit-learn for statistical log analysis |
+| **TCP Honeypot** | Listens on port 8080 with structured connection logging |
+| **Splunk Integration** | Offline analysis pipeline using Splunk log exports |
+
+---
+
+## Goals
+
+- Document CTF-style exercises and real-world security scenarios
+- Build and maintain custom tools and scripts developed during engagements
+- Create a living portfolio of practical, hands-on cybersecurity experience
+
+---
+
+## Links
+
+- [Hack The Box Profile](https://app.hackthebox.com/profile/basil9099)
 - [LinkedIn](https://www.linkedin.com/in/angus-dawson-92b035249)
 
 ---
 
-> 📌 Note: All systems are hosted internally in an isolated lab environment. This lab is for educational and training purposes only.
+> **Disclaimer:** All systems are hosted internally in an isolated lab environment. This repository is intended for educational and training purposes only.
