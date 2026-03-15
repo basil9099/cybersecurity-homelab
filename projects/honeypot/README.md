@@ -1,10 +1,10 @@
-# 🪤 Simple Python Honeypot (Port 8080)
+# Simple Python Honeypot (Port 8080)
 
 A lightweight TCP honeypot script written in Python, designed for use in a home cybersecurity lab.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 honeypot/
@@ -19,7 +19,7 @@ honeypot/
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 - Listens for incoming connections on **port 8080**
 - Accepts and logs connection info (IP, port, data sent)
@@ -27,7 +27,7 @@ honeypot/
 
 ---
 
-## 🚀 Running the Honeypot
+## Running the Honeypot
 
 ```bash
 python3 honeypot.py
@@ -39,7 +39,7 @@ nc localhost 8080
 hello
 ```
 
-✅ Output will be printed and saved:
+Output will be printed and saved:
 ```
 [2025-08-04 16:53:48] Connection from 127.0.0.1:37576
 Data: hello
@@ -47,11 +47,11 @@ Data: hello
 
 ---
 
-## 🔐 Notes
+## Notes
 
 - Port can be changed by modifying `LISTEN_PORT` in the script.
 - Use with firewall rules to safely trap unauthorized scans or connections.
 
 ---
 
-📸 See the `screenshots/` folder for visual proof of concept and execution.
+See the `screenshots/` folder for visual proof of concept and execution.
