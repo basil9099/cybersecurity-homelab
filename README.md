@@ -24,7 +24,8 @@
 cybersecurity-homelab/
 ├── projects/
 │   ├── honeypot/               # Lightweight TCP honeypot for trap-based detection
-│   └── anomaly-detector/       # Python ML script for anomaly detection on logs
+│   ├── anomaly-detector/       # Python ML script for anomaly detection on logs
+│   └── api_security_tester/    # Full-stack API security scanner (FastAPI + React)
 ├── offensive-security/         # Exploits, payloads, and enumeration labs
 ├── defensive-security/
 │   ├── splunk/                 # Splunk configuration, dashboards, and detection engineering
@@ -74,6 +75,7 @@ Blue team capabilities developed to complement offensive skills:
 | **Anomaly Detection Script** | Python + scikit-learn for statistical log analysis |
 | **TCP Honeypot** | Listens on port 8080 with structured connection logging |
 | **Splunk Integration** | Offline analysis pipeline using Splunk log exports |
+| **API Security Tester** | Full-stack FastAPI + React app that probes APIs for rate limiting, auth bypass, SQLi, and IDOR/BOLA flaws |
 
 ---
 
