@@ -1,10 +1,10 @@
-# 🧠 Python Anomaly Detector for Splunk Log Exports
+# Python Anomaly Detector for Splunk Log Exports
 
-This is a lightweight machine learning-based anomaly detection tool to identify suspicious login behavior from Splunk-exported CSV logs.
+A lightweight machine learning-based anomaly detection tool for identifying suspicious login behavior from Splunk-exported CSV logs.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 splunk-anomaly-detector/
@@ -19,31 +19,31 @@ splunk-anomaly-detector/
 
 ---
 
-## 💡 How It Works
+## How It Works
 
-1. **Preprocessing**  
+1. **Preprocessing**
    - Converts timestamps into hourly features
    - Encodes usernames and source IPs numerically
-   - Prepares features for model input  
-   _📸 `01_preprocess-script.png`_
+   - Prepares features for model input
+   _See `01_preprocess-script.png`_
 
 2. **Detection**
    - Uses `IsolationForest` to detect outliers in login behavior
-   - Flags logins by rare users/IPs/times  
-   _📸 `02_detect-script.png`_
+   - Flags logins by rare users, IPs, or times
+   _See `02_detect-script.png`_
 
 3. **Execution**
-   - Combine both steps in `main.py`
-   - Prints anomalies in clear table format  
-   _📸 `03_main-script.png` & `04_script-output.png`_
+   - Combines both steps in `main.py`
+   - Prints anomalies in a clear table format
+   _See `03_main-script.png` and `04_script-output.png`_
 
 4. **Input Format**
-   - CSV: timestamp, Account Name, Source IP, EventCode  
-   _📸 `05_sample-logs.png`_
+   - CSV columns: `timestamp`, `Account Name`, `Source IP`, `EventCode`
+   _See `05_sample-logs.png`_
 
 ---
 
-## 🚀 Example Run
+## Example Run
 
 ```bash
 python3 main.py
@@ -59,7 +59,7 @@ Timestamp           Account Name  Source IP      ...
 
 ---
 
-## 🔧 Dependencies
+## Dependencies
 
 ```bash
 pip install pandas scikit-learn
@@ -67,13 +67,13 @@ pip install pandas scikit-learn
 
 ---
 
-## 🛠️ Future Ideas
+## Future Ideas
 
-- CLI arg for file path input
-- Output to JSON/CSV
+- CLI argument for custom file path input
+- Output results to JSON or CSV
 - REST API wrapper
 - Dockerize and schedule via cron
 
 ---
 
-📸 See `/screenshots` for step-by-step visuals of this tool in use.
+See `/screenshots` for step-by-step visuals of this tool in use.
