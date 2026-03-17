@@ -1,12 +1,12 @@
-# 🔐 DVWA Brute-Force Automation Script
+# DVWA Brute-Force Automation Script
 
 This Python script performs a dictionary-based brute-force attack on the **Damn Vulnerable Web Application (DVWA)** login form. It targets the login page hosted locally (`http://localhost/dvwa/login.php`), demonstrating a low-security brute-force exploitation.
 
-> ✅ Tested and working successfully against DVWA on **Kali Linux**.
+> Tested and working successfully against DVWA on **Kali Linux**.
 
 ---
 
-## ⚙️ Features
+## Features
 
 - Dynamically pulls CSRF token from each login attempt
 - Uses `requests.Session()` to handle cookies automatically
@@ -15,35 +15,35 @@ This Python script performs a dictionary-based brute-force attack on the **Damn 
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 > These demonstrate the attack sequence and successful credential discovery.
 
-### 🔐 Brute Force Script (Part 1)
+### Brute Force Script (Part 1)
 
 ![Brute Force Script - Part 1](../../screenshots/brute_force_script.png)
 
-### 🔐 Brute Force Script (Part 2)
+### Brute Force Script (Part 2)
 
 ![Brute Force Script - Part 2](../../screenshots/brute_force_script_pt2.png)
 
 ---
 
-### ✅ Script Output: Successful Password Crack
+### Script Output: Successful Password Crack
 
-![Script Output - Success](../../screenshots/script_success.png)  
+![Script Output - Success](../../screenshots/script_success.png)
 ![Script Output - Success (Alt)](../../screenshots/script_success2.png)
 
 ---
 
-### 🎯 Successful Login (in DVWA)
+### Successful Login (in DVWA)
 
-![Successful Login Screenshot 1](../../screenshots/successful_login1.png)  
+![Successful Login Screenshot 1](../../screenshots/successful_login1.png)
 ![Successful Login Screenshot 2](../../screenshots/successful_login2.png)
 
 ---
 
-## 🧪 How to Test
+## How to Test
 
 1. **Ensure DVWA is running** on `http://localhost/dvwa/login.php`
     - Security Level: **Low**
@@ -62,21 +62,23 @@ This Python script performs a dictionary-based brute-force attack on the **Damn 
     ```
 
 4. **Observe results**:
-    - ❌ Failed attempts are clearly logged
-    - ✅ Successful password crack is printed with line number
+    - Failed attempts are clearly logged
+    - Successful password crack is printed with line number
 
 ---
 
-## 📂 File Structure
+## File Structure
 
+```
 brute-forcer/
-├── brute.py # Main brute-force script
-├── rockyou.txt # Wordlist used for password attempts
-├── README.md # This file
+├── brute.py        # Main brute-force script
+├── rockyou.txt     # Wordlist used for password attempts
+└── README.md       # This file
+```
 
 ---
 
-## 🧠 Learning Objective
+## Learning Objective
 
 This script was created to help understand:
 
@@ -87,4 +89,4 @@ This script was created to help understand:
 
 ---
 
-> ⚠️ **DISCLAIMER**: This script is for **educational use only** in a controlled lab environment. Never perform unauthorized testing on live or third-party systems.
+> **DISCLAIMER**: This script is for **educational use only** in a controlled lab environment. Never perform unauthorized testing on live or third-party systems.
