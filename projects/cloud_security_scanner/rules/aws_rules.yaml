@@ -1,0 +1,96 @@
+rules:
+  - id: "AWS-S3-001"
+    title: "S3 Bucket Public Access"
+    description: "S3 buckets should not allow public access via ACLs or bucket policies"
+    severity: "critical"
+    provider: "aws"
+    resource_type: "S3 Bucket"
+    check_method: "check_s3_public_access"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 2.1.1"
+    remediation: "Enable S3 Block Public Access at the account and bucket level. Remove any bucket policies or ACLs that grant public access."
+    enabled: true
+    tags: ["storage", "public-access", "s3"]
+
+  - id: "AWS-S3-002"
+    title: "S3 Bucket Encryption"
+    description: "S3 buckets should have default server-side encryption enabled"
+    severity: "high"
+    provider: "aws"
+    resource_type: "S3 Bucket"
+    check_method: "check_s3_encryption"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 2.1.2"
+    remediation: "Enable default encryption on the S3 bucket using SSE-S3 (AES-256) or SSE-KMS."
+    enabled: true
+    tags: ["storage", "encryption", "s3"]
+
+  - id: "AWS-IAM-001"
+    title: "IAM Users Without MFA"
+    description: "All IAM users with console access should have MFA enabled"
+    severity: "critical"
+    provider: "aws"
+    resource_type: "IAM User"
+    check_method: "check_iam_no_mfa"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 1.10"
+    remediation: "Enable MFA for all IAM users with console access. Use virtual MFA devices or hardware tokens."
+    enabled: true
+    tags: ["iam", "mfa", "authentication"]
+
+  - id: "AWS-IAM-002"
+    title: "Overly Permissive IAM Policies"
+    description: "IAM policies should not allow full administrative access (Action: *, Resource: *)"
+    severity: "critical"
+    provider: "aws"
+    resource_type: "IAM Policy"
+    check_method: "check_iam_overly_permissive"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 1.16"
+    remediation: "Apply the principle of least privilege. Replace wildcard policies with specific actions and resources."
+    enabled: true
+    tags: ["iam", "permissions", "least-privilege"]
+
+  - id: "AWS-EC2-001"
+    title: "Unencrypted EBS Volumes"
+    description: "EBS volumes should be encrypted at rest"
+    severity: "high"
+    provider: "aws"
+    resource_type: "EBS Volume"
+    check_method: "check_ebs_encryption"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 2.2.1"
+    remediation: "Enable EBS encryption by default in the account settings, or create encrypted copies of existing volumes."
+    enabled: true
+    tags: ["compute", "encryption", "ebs"]
+
+  - id: "AWS-EC2-002"
+    title: "Unrestricted Security Group Ingress"
+    description: "Security groups should not allow unrestricted ingress (0.0.0.0/0) on sensitive ports"
+    severity: "high"
+    provider: "aws"
+    resource_type: "Security Group"
+    check_method: "check_security_groups"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 5.2"
+    remediation: "Restrict security group ingress rules to specific IP ranges. Never allow 0.0.0.0/0 on SSH (22), RDP (3389), or database ports."
+    enabled: true
+    tags: ["network", "security-groups", "firewall"]
+
+  - id: "AWS-RDS-001"
+    title: "Unencrypted RDS Instances"
+    description: "RDS database instances should have storage encryption enabled"
+    severity: "high"
+    provider: "aws"
+    resource_type: "RDS Instance"
+    check_method: "check_rds_encryption"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 2.3.1"
+    remediation: "Enable encryption when creating RDS instances. For existing instances, create an encrypted snapshot and restore from it."
+    enabled: true
+    tags: ["database", "encryption", "rds"]
+
+  - id: "AWS-LOG-001"
+    title: "CloudTrail Logging Disabled"
+    description: "AWS CloudTrail should be enabled in all regions for API activity logging"
+    severity: "critical"
+    provider: "aws"
+    resource_type: "CloudTrail"
+    check_method: "check_cloudtrail"
+    cis_benchmark: "CIS AWS Foundations 1.4.0 - 3.1"
+    remediation: "Enable CloudTrail with a multi-region trail. Ensure log file validation and S3 bucket logging are enabled."
+    enabled: true
+    tags: ["logging", "monitoring", "cloudtrail"]
