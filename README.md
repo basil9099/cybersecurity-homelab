@@ -77,6 +77,7 @@ Blue team capabilities developed to complement offensive skills:
 | **Splunk Integration** | Offline analysis pipeline using Splunk log exports |
 | **API Security Tester** | Full-stack FastAPI + React app that probes APIs for rate limiting, auth bypass, SQLi, and IDOR/BOLA flaws |
 | **Metadata Stripper** | Privacy-focused CLI that removes GPS, author, timestamp, and software traces from JPEG, PNG, PDF, DOCX, XLSX, and PPTX files with concurrent processing and dry-run mode |
+| **Network Baseline Monitor** | Establishes normal traffic behavior baselines via packet analysis, detects statistical deviations (z-score, IQR, moving average), identifies attack patterns (port scan, exfiltration, C2 beaconing, lateral movement), and generates HTML/JSON anomaly reports |
 
 ---
 
