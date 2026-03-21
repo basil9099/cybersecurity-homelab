@@ -1,15 +1,15 @@
-# Offensive Security — HackTheBox Practice
+# Offensive Security — HackTheBox & Homelab Practice
 
 ## Overview
 
-This section documents my HackTheBox pentesting practice. HackTheBox (HTB) is an online platform providing intentionally vulnerable machines to develop and refine offensive security skills in a legal, controlled environment. Each machine below includes key vulnerability details and methodology. Full writeups are published on my blog.
+This section documents my offensive security practice across two areas: HackTheBox (HTB) retired machines and original homelab exercises. Each entry includes key vulnerability details, methodology, and links to full writeups on my blog.
 
 - **HTB Profile:** https://app.hackthebox.com/users/2407781
 - **Writeups Blog:** https://basil9099.github.io
 
 ---
 
-## Machines With Writeups
+## HackTheBox Machines
 
 ### Cap — Easy | Linux | Retired
 
@@ -64,6 +64,47 @@ This section documents my HackTheBox pentesting practice. HackTheBox (HTB) is an
 
 ---
 
+## Homelab Exercises
+
+### Pentest Workflow (Windows AD) — September 18, 2025
+
+**Target:** Active Directory domain controller on local network (`homelab.local`)
+**Tools:** Nmap, Kerbrute, CrackMapExec, Evil-WinRM
+
+| Step | Detail |
+|------|--------|
+| Host Discovery | `nmap -sn 192.168.0.0/24` ping sweep — DC identified at `192.168.0.147` |
+| Service Scan | `nmap -sV -sC` confirmed Windows AD DC (Kerberos port 88, LDAP, AD ports present) |
+| User Enumeration | `kerbrute userenum` against KDC — found `administrator@homelab.local` |
+| Password Brute-Force | `crackmapexec smb` with `rockyou.txt` — recovered valid credentials; `(Pwn3d!)` response confirmed admin access |
+| Shell | `evil-winrm` with discovered credentials — authenticated remote PowerShell session obtained |
+| Proof | `Set-Content` via Evil-WinRM to write `proof.txt` on the Administrator Desktop |
+
+**Key lessons:** disable anonymous Kerberos user lookups; rate-limit and alert on auth brute-force; enforce MFA for privileged accounts; apply strong password policy on domain admins.
+
+**Writeup:** https://basil9099.github.io/homelab/windows_pentest/
+
+---
+
+### Phishing Simulation — September 20, 2025
+
+**Target:** Isolated lab environment (Kali attacker VM + lab target VM)
+**Tools:** GoPhish, Social-Engineer Toolkit (SET)
+
+> Lab use only. Do not deploy against real users or networks without explicit written permission.
+
+| Step | Detail |
+|------|--------|
+| Infrastructure | Started GoPhish dashboard on attacker VM; configured SMTP sending profile with lab Gmail + app password |
+| Landing Page | Created GoPhish landing page using SET Google 2FA HTML template (`/usr/share/set/src/html/templates/google/index.html`); added JS redirect to real Google site post-submission |
+| Email Template | Pasted SET 2-step verification HTML into GoPhish email template; ticked "Change links to landing page" to rewrite all links |
+| Campaign | Set campaign URL to attacker IP + listener port (`http://<ATTACKER_IP>:8080#`); added lab recipient addresses; launched campaign |
+| Credential Capture | Target opened phishing email, clicked link, submitted credentials on cloned landing page; GoPhish campaign view showed captured creds and metadata (IP, user-agent, timestamp) |
+
+**Writeup:** https://basil9099.github.io/homelab/phishing_simulation/
+
+---
+
 ## Other Completed Machines
 
 Additional machines have been completed but writeups are still in progress. This list will be updated as they are published.
@@ -79,5 +120,7 @@ Additional machines have been completed but writeups are still in progress. This
 | Traffic Analysis | Wireshark, PCAP inspection |
 | Exploitation | Metasploit, EternalBlue, CVE PoCs |
 | Wireless | Reaver (WPS brute-force), monitor mode |
+| Active Directory | Kerbrute (user enum), CrackMapExec (SMB brute-force), Evil-WinRM (remote shell) |
+| Phishing | GoPhish, Social-Engineer Toolkit (SET) |
 | Linux PrivEsc | Linux capabilities (`getcap`), SUID abuse |
 | Windows PrivEsc | Kernel exploits (MS16-098), SAM extraction |
