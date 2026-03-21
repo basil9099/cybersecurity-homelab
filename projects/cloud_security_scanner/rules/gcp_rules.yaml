@@ -1,0 +1,60 @@
+rules:
+  - id: "GCP-STORAGE-001"
+    title: "Cloud Storage Bucket Public Access"
+    description: "Cloud Storage buckets should not grant access to allUsers or allAuthenticatedUsers"
+    severity: "critical"
+    provider: "gcp"
+    resource_type: "Cloud Storage Bucket"
+    check_method: "check_storage_public_access"
+    cis_benchmark: "CIS GCP Foundations 2.0.0 - 5.1"
+    remediation: "Remove allUsers and allAuthenticatedUsers from bucket IAM bindings. Use uniform bucket-level access."
+    enabled: true
+    tags: ["storage", "public-access"]
+
+  - id: "GCP-STORAGE-002"
+    title: "Cloud Storage Bucket Encryption"
+    description: "Cloud Storage buckets should use customer-managed encryption keys (CMEK)"
+    severity: "medium"
+    provider: "gcp"
+    resource_type: "Cloud Storage Bucket"
+    check_method: "check_storage_encryption"
+    cis_benchmark: "CIS GCP Foundations 2.0.0 - 5.3"
+    remediation: "Configure Cloud Storage buckets to use customer-managed encryption keys (CMEK) via Cloud KMS."
+    enabled: true
+    tags: ["storage", "encryption"]
+
+  - id: "GCP-NET-001"
+    title: "Firewall Rule Allows Unrestricted Ingress"
+    description: "VPC firewall rules should not allow ingress from 0.0.0.0/0 on sensitive ports"
+    severity: "high"
+    provider: "gcp"
+    resource_type: "Firewall Rule"
+    check_method: "check_firewall_rules"
+    cis_benchmark: "CIS GCP Foundations 2.0.0 - 3.6"
+    remediation: "Restrict firewall rule source ranges to specific IP addresses or CIDR blocks. Remove 0.0.0.0/0 source ranges."
+    enabled: true
+    tags: ["network", "firewall"]
+
+  - id: "GCP-IAM-001"
+    title: "IAM Primitive Roles on Project"
+    description: "Projects should not use primitive IAM roles (Owner, Editor, Viewer) for service accounts"
+    severity: "high"
+    provider: "gcp"
+    resource_type: "IAM Binding"
+    check_method: "check_iam_primitive_roles"
+    cis_benchmark: "CIS GCP Foundations 2.0.0 - 1.6"
+    remediation: "Replace primitive roles with predefined or custom IAM roles that follow the principle of least privilege."
+    enabled: true
+    tags: ["iam", "permissions", "least-privilege"]
+
+  - id: "GCP-SQL-001"
+    title: "Cloud SQL Instance Without SSL"
+    description: "Cloud SQL instances should enforce SSL connections"
+    severity: "high"
+    provider: "gcp"
+    resource_type: "Cloud SQL Instance"
+    check_method: "check_cloudsql_ssl"
+    cis_benchmark: "CIS GCP Foundations 2.0.0 - 6.4"
+    remediation: "Enable SSL enforcement on Cloud SQL instances through the instance settings."
+    enabled: true
+    tags: ["database", "encryption", "ssl"]

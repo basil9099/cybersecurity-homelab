@@ -1,0 +1,60 @@
+rules:
+  - id: "AZURE-STORAGE-001"
+    title: "Storage Account Public Blob Access"
+    description: "Storage accounts should not allow public blob access"
+    severity: "critical"
+    provider: "azure"
+    resource_type: "Storage Account"
+    check_method: "check_storage_public_access"
+    cis_benchmark: "CIS Azure Foundations 2.0.0 - 3.7"
+    remediation: "Disable public blob access on the storage account. Set 'Allow Blob public access' to disabled in the storage account settings."
+    enabled: true
+    tags: ["storage", "public-access"]
+
+  - id: "AZURE-STORAGE-002"
+    title: "Storage Account Encryption"
+    description: "Storage accounts should have encryption enabled for blob services"
+    severity: "high"
+    provider: "azure"
+    resource_type: "Storage Account"
+    check_method: "check_storage_encryption"
+    cis_benchmark: "CIS Azure Foundations 2.0.0 - 3.2"
+    remediation: "Enable encryption for all storage services. Azure Storage encryption is enabled by default but verify customer-managed keys are used where required."
+    enabled: true
+    tags: ["storage", "encryption"]
+
+  - id: "AZURE-NET-001"
+    title: "NSG Unrestricted Inbound Access"
+    description: "Network Security Groups should not allow unrestricted inbound access on sensitive ports"
+    severity: "high"
+    provider: "azure"
+    resource_type: "Network Security Group"
+    check_method: "check_nsg_unrestricted"
+    cis_benchmark: "CIS Azure Foundations 2.0.0 - 6.1"
+    remediation: "Restrict NSG inbound rules to specific IP ranges. Remove rules that allow traffic from 'Any' or '*' source on sensitive ports."
+    enabled: true
+    tags: ["network", "nsg", "firewall"]
+
+  - id: "AZURE-KV-001"
+    title: "Key Vault Overly Broad Access"
+    description: "Key Vault access policies should follow the principle of least privilege"
+    severity: "high"
+    provider: "azure"
+    resource_type: "Key Vault"
+    check_method: "check_keyvault_access"
+    cis_benchmark: "CIS Azure Foundations 2.0.0 - 8.5"
+    remediation: "Review Key Vault access policies and remove unnecessary permissions. Use RBAC for Key Vault access control."
+    enabled: true
+    tags: ["keyvault", "permissions", "secrets"]
+
+  - id: "AZURE-SQL-001"
+    title: "SQL Database Without TDE"
+    description: "Azure SQL databases should have Transparent Data Encryption (TDE) enabled"
+    severity: "high"
+    provider: "azure"
+    resource_type: "SQL Database"
+    check_method: "check_sql_tde"
+    cis_benchmark: "CIS Azure Foundations 2.0.0 - 4.1.2"
+    remediation: "Enable Transparent Data Encryption on all Azure SQL databases through the Azure portal or PowerShell."
+    enabled: true
+    tags: ["database", "encryption", "sql"]
