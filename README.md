@@ -23,19 +23,29 @@
 ```
 cybersecurity-homelab/
 ├── projects/
-│   ├── honeypot/               # Lightweight TCP honeypot for trap-based detection
-│   ├── anomaly-detector/       # Python ML script for anomaly detection on logs
-│   └── api_security_tester/    # Full-stack API security scanner (FastAPI + React)
-├── offensive-security/         # Exploits, payloads, and enumeration labs
+│   ├── honeypot/                 # Lightweight TCP honeypot for trap-based detection
+│   ├── anomaly_detector/         # Python ML script for anomaly detection on logs
+│   ├── api_security_tester/      # Full-stack API security scanner (FastAPI + React)
+│   ├── ad_enum/                  # Active Directory enumeration tools
+│   ├── brute_forcer/             # Password brute force tools
+│   ├── cloud_security_scanner/   # AWS/cloud vulnerability scanner
+│   ├── exploit_framework/        # Custom exploit framework with payloads and handlers
+│   ├── keylogger/                # Keylogger project
+│   ├── metadata_stripper/        # Privacy-focused metadata removal tool
+│   ├── network_baseline_monitor/ # Network anomaly detection and reporting system
+│   ├── osint_framework/          # OSINT reconnaissance framework
+│   └── vulnerability_scanner/    # Vulnerability scanning tool
+├── offensive-security/           # Exploits, payloads, and enumeration labs
 ├── defensive-security/
-│   ├── splunk/                 # Splunk configuration, dashboards, and detection engineering
-│   ├── pfsense-firewall/       # pfSense setup, network segmentation, and traffic monitoring
-│   ├── network-monitoring/     # Wireshark, Zeek, and Suricata labs
-│   └── windows-server-with-AD/ # Active Directory setup with DNS, DHCP, and GPOs
-├── hardware-pentesting/        # Physical device exploitation (Flipper Zero, USB attacks)
-├── docs/                       # Diagrams and architecture notes
-├── tools/                      # Helper scripts and utilities
-└── troubleshooting/            # Notes, fixes, and debugging steps for common lab issues
+│   ├── splunk/                   # Splunk configuration, dashboards, and detection engineering
+│   ├── pfsense-firewall/         # pfSense setup, network segmentation, and traffic monitoring
+│   ├── network-monitoring/       # Wireshark, Zeek, and Suricata labs
+│   └── windows-server-with-AD/   # Active Directory setup with DNS, DHCP, and GPOs
+├── hardware-pentesting/
+│   ├── flipper-zero/             # Flipper Zero device exploitation
+│   └── wifi-pineapple/           # WiFi Pineapple penetration testing
+├── docs/                         # Diagrams and architecture notes
+└── troubleshooting/              # Notes, fixes, and debugging steps for common lab issues
 ```
 
 ---
