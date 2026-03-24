@@ -18,7 +18,6 @@ Terms of Service and applicable privacy laws (GDPR, CCPA) when using output.
 
 import re
 import time
-import urllib.parse
 from typing import Any
 
 try:

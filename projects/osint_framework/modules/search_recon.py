@@ -22,7 +22,6 @@ Dork techniques demonstrated:
   cache:     — Google's cached version
 """
 
-import time
 import urllib.parse
 from typing import Any
 

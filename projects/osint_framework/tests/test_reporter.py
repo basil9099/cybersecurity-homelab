@@ -4,9 +4,7 @@ import json
 import os
 import stat
 import sys
-import tempfile
 
-import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

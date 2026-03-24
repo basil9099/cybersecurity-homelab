@@ -18,8 +18,6 @@ Profile sections:
 
 import json
 import os
-import re
-import textwrap
 from datetime import datetime
 from typing import Any
 
@@ -365,7 +363,7 @@ def generate_text_report(profile: dict[str, Any], output_path: str) -> str:
 
     meta = profile["meta"]
     lines.append("╔══════════════════════════════════════════════════════════════════════╗")
-    lines.append(f"║  OSINT RECONNAISSANCE REPORT                                        ║")
+    lines.append("║  OSINT RECONNAISSANCE REPORT                                        ║")
     lines.append(f"║  Target    : {meta['target']:<57}║")
     lines.append(f"║  Generated : {meta['generated_at']:<57}║")
     lines.append("╚══════════════════════════════════════════════════════════════════════╝")

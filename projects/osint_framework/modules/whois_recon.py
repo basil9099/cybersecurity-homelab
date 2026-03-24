@@ -9,9 +9,7 @@ interaction required (queries go to IANA/ARIN/RIPE, not the target).
 """
 
 import re
-import socket
 import ipaddress
-from datetime import datetime
 from typing import Any
 
 try:
