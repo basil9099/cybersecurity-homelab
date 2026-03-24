@@ -32,8 +32,9 @@ Legal notice:
 """
 
 import argparse
-import json
+import logging
 import os
+import re
 import sys
 import time
 from typing import Any
@@ -64,6 +65,142 @@ BANNER  = r"""
 
 
 # ---------------------------------------------------------------------------
+# Input validation
+# ---------------------------------------------------------------------------
+
+_DOMAIN_RE = re.compile(
+    r"^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.[A-Za-z0-9-]{1,63})*\.[A-Za-z]{2,}$"
+)
+_IPV4_RE = re.compile(
+    r"^(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)$"
+)
+_IPV6_RE = re.compile(r"^[0-9a-fA-F:]+$")  # simplified check
+
+MAX_WORDLIST_BYTES = 10 * 1024 * 1024  # 10 MB
+
+
+def validate_target(target: str) -> str:
+    """Validate that *target* looks like a domain name or IP address."""
+    target = target.strip().lower()
+    if _DOMAIN_RE.match(target) or _IPV4_RE.match(target) or _IPV6_RE.match(target):
+        return target
+    raise argparse.ArgumentTypeError(
+        f"Invalid target '{target}'. Provide a valid domain (e.g. example.com) or IP address."
+    )
+
+
+def validate_ip(ip: str) -> str:
+    """Validate an explicit IP address argument."""
+    ip = ip.strip()
+    if _IPV4_RE.match(ip) or _IPV6_RE.match(ip):
+        return ip
+    raise argparse.ArgumentTypeError(f"Invalid IP address: '{ip}'")
+
+
+def validate_wordlist(path: str) -> str:
+    """Ensure wordlist file exists and is not excessively large."""
+    if not os.path.isfile(path):
+        raise argparse.ArgumentTypeError(f"Wordlist file not found: {path}")
+    size = os.path.getsize(path)
+    if size > MAX_WORDLIST_BYTES:
+        raise argparse.ArgumentTypeError(
+            f"Wordlist too large ({size / 1024 / 1024:.1f} MB). Maximum is "
+            f"{MAX_WORDLIST_BYTES / 1024 / 1024:.0f} MB."
+        )
+    return path
+
+
+# ---------------------------------------------------------------------------
+# Logging helpers
+# ---------------------------------------------------------------------------
+
+def setup_logging(verbose: bool = False, log_file: str | None = None) -> logging.Logger:
+    """Configure the framework logger.
+
+    By default only WARNING+ messages are emitted (operational security).
+    ``--verbose`` lowers the threshold to DEBUG and ``--log-file`` writes to disk.
+    """
+    logger = logging.getLogger("osint_framework")
+    logger.setLevel(logging.DEBUG if verbose else logging.WARNING)
+
+    fmt = logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S",
+    )
+
+    if verbose:
+        sh = logging.StreamHandler(sys.stderr)
+        sh.setFormatter(fmt)
+        logger.addHandler(sh)
+
+    if log_file:
+        fh = logging.FileHandler(log_file, encoding="utf-8")
+        fh.setFormatter(fmt)
+        logger.addHandler(fh)
+
+    return logger
+
+
+# ---------------------------------------------------------------------------
+# Configuration file support
+# ---------------------------------------------------------------------------
+
+def load_config_file(path: str | None) -> dict[str, Any]:
+    """Load API keys and options from a TOML config file.
+
+    Returns an empty dict if *path* is ``None`` or the file does not exist.
+    Warns if the file has overly permissive permissions (world-readable).
+    """
+    if not path:
+        return {}
+    if not os.path.isfile(path):
+        return {}
+
+    # Permission check (Unix only)
+    try:
+        mode = os.stat(path).st_mode & 0o777
+        if mode & 0o044:
+            print(f"  [!] Config file {path} is world/group-readable (mode {oct(mode)}). "
+                  "Consider: chmod 600", file=sys.stderr)
+    except OSError:
+        pass
+
+    # Python 3.11+ has tomllib in stdlib
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        try:
+            import tomli as tomllib  # type: ignore[no-redef]
+        except ModuleNotFoundError:
+            print("  [!] TOML support requires Python 3.11+ or 'pip install tomli'",
+                  file=sys.stderr)
+            return {}
+
+    with open(path, "rb") as fh:
+        return tomllib.load(fh)
+
+
+def apply_config(args: argparse.Namespace, config: dict[str, Any]) -> None:
+    """Merge config-file values into *args*, CLI flags take precedence."""
+    key_map = {
+        "hibp_key":       "hibp-key",
+        "shodan_key":     "shodan-key",
+        "github_token":   "github-token",
+        "google_key":     "google-key",
+        "google_cse_id":  "google-cse-id",
+        "bing_key":       "bing-key",
+        "dehashed_email": "dehashed-email",
+        "dehashed_key":   "dehashed-key",
+    }
+    api_section = config.get("api_keys", config)
+    for attr, _toml_key in key_map.items():
+        if not getattr(args, attr, None):
+            value = api_section.get(attr) or api_section.get(_toml_key)
+            if value:
+                setattr(args, attr, value)
+
+
+# ---------------------------------------------------------------------------
 # CLI argument parsing
 # ---------------------------------------------------------------------------
 
@@ -76,9 +213,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
 
     # Target
-    p.add_argument("-t", "--target", required=True,
+    p.add_argument("-t", "--target", required=True, type=validate_target,
                    help="Target domain (e.g. example.com) or IP address")
-    p.add_argument("--ip", metavar="IP",
+    p.add_argument("--ip", metavar="IP", type=validate_ip,
                    help="Specific IP address to query (optional, auto-resolved if omitted)")
 
     # Module selection
@@ -112,8 +249,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
                             help="GitHub usernames to profile")
     targeting.add_argument("--emails", metavar="EMAIL", nargs="+",
                             help="Email addresses to check for breaches")
-    targeting.add_argument("--subdomain-wordlist", metavar="FILE",
-                            help="Path to custom subdomain wordlist (one per line)")
+    targeting.add_argument("--subdomain-wordlist", metavar="FILE", type=validate_wordlist,
+                            help="Path to custom subdomain wordlist (one per line, max 10 MB)")
 
     # DNS options
     dns_opts = p.add_argument_group("DNS options")
@@ -142,6 +279,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
                      default="all", help="Report format (default: all)")
     out.add_argument("--quiet", action="store_true", help="Suppress progress output")
     out.add_argument("--no-banner", action="store_true", help="Skip ASCII banner")
+
+    # Logging
+    log = p.add_argument_group("Logging")
+    log.add_argument("--verbose", action="store_true",
+                     help="Enable verbose/debug logging to stderr")
+    log.add_argument("--log-file", metavar="FILE",
+                     help="Write structured logs to FILE")
+
+    # Configuration file
+    cfg = p.add_argument_group("Configuration")
+    cfg.add_argument("--config", metavar="FILE",
+                     help="Path to TOML config file with API keys and options")
 
     return p
 
@@ -215,8 +364,12 @@ def run_dns(args: argparse.Namespace, prog: Progress) -> dict[str, Any]:
     wordlist = None
     if args.subdomain_wordlist:
         try:
-            with open(args.subdomain_wordlist) as fh:
-                wordlist = [line.strip() for line in fh if line.strip()]
+            with open(args.subdomain_wordlist, encoding="utf-8", errors="ignore") as fh:
+                wordlist = [
+                    line.strip()
+                    for line in fh
+                    if line.strip() and line.strip().isascii() and not line.startswith("#")
+                ]
             prog.info(f"Loaded {len(wordlist)} subdomains from {args.subdomain_wordlist}")
         except Exception as e:
             prog.warn(f"Could not load wordlist: {e}")
@@ -457,6 +610,17 @@ def main():
     parser = build_arg_parser()
     args   = parser.parse_args()
     prog   = Progress(quiet=args.quiet)
+
+    # Logging
+    logger = setup_logging(verbose=args.verbose, log_file=args.log_file)
+    logger.info("OSINT Framework started — target: %s", args.target)
+
+    # Config file
+    if args.config:
+        config = load_config_file(args.config)
+        if config:
+            apply_config(args, config)
+            logger.info("Loaded config from %s", args.config)
 
     if not args.no_banner:
         print(BANNER)

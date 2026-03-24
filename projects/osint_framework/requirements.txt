@@ -2,19 +2,22 @@
 # Install with: pip install -r requirements.txt
 
 # DNS queries and zone transfer
-dnspython>=2.4.0
+dnspython==2.7.0
 
 # WHOIS parsing
-python-whois>=0.9.0
+python-whois==0.9.4
 
 # HTTP requests (used by nearly every module)
-requests>=2.31.0
+requests==2.32.3
+
+# Optional: TOML config file support (Python <3.11)
+# tomli>=2.0.1
 
 # Optional: faster JSON parsing for large Shodan/HIBP responses
-# ujson>=5.8.0
+# ujson>=5.10.0
 
 # Optional: coloured terminal output
 # colorama>=0.4.6
 
 # Optional: progress bars for long-running tasks
-# tqdm>=4.66.0
+# tqdm>=4.67.0

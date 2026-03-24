@@ -18,8 +18,6 @@ Profile sections:
 
 import json
 import os
-import re
-import textwrap
 from datetime import datetime
 from typing import Any
 
@@ -322,10 +320,19 @@ def _build_relationships(profile: dict[str, Any]) -> list[dict[str, str]]:
 # Report generation
 # ---------------------------------------------------------------------------
 
+def _restrict_permissions(path: str) -> None:
+    """Set file permissions to owner-only (0600) since reports contain sensitive data."""
+    try:
+        os.chmod(path, 0o600)
+    except OSError:
+        pass  # Non-Unix or permission error — best-effort
+
+
 def generate_json_report(profile: dict[str, Any], output_path: str) -> str:
     """Serialise the profile as pretty-printed JSON."""
     with open(output_path, "w", encoding="utf-8") as fh:
         json.dump(profile, fh, indent=2, default=str)
+    _restrict_permissions(output_path)
     return output_path
 
 
@@ -356,7 +363,7 @@ def generate_text_report(profile: dict[str, Any], output_path: str) -> str:
 
     meta = profile["meta"]
     lines.append("╔══════════════════════════════════════════════════════════════════════╗")
-    lines.append(f"║  OSINT RECONNAISSANCE REPORT                                        ║")
+    lines.append("║  OSINT RECONNAISSANCE REPORT                                        ║")
     lines.append(f"║  Target    : {meta['target']:<57}║")
     lines.append(f"║  Generated : {meta['generated_at']:<57}║")
     lines.append("╚══════════════════════════════════════════════════════════════════════╝")
@@ -511,6 +518,7 @@ def generate_text_report(profile: dict[str, Any], output_path: str) -> str:
     text = "\n".join(lines)
     with open(output_path, "w", encoding="utf-8") as fh:
         fh.write(text)
+    _restrict_permissions(output_path)
     return output_path
 
 
@@ -719,6 +727,7 @@ def generate_html_report(profile: dict[str, Any], output_path: str) -> str:
 
     with open(output_path, "w", encoding="utf-8") as fh:
         fh.write(html)
+    _restrict_permissions(output_path)
     return output_path
 
 

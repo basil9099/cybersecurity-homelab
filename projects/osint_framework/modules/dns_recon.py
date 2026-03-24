@@ -15,6 +15,7 @@ Techniques covered:
 
 import socket
 import re
+import time
 import concurrent.futures
 from typing import Any
 
@@ -171,7 +172,9 @@ def _attempt_zone_transfer(domain: str, result: dict[str, Any]) -> None:
 
     result["zone_transfer"]["attempted"] = bool(ns_list)
 
-    for ns in ns_list:
+    for i, ns in enumerate(ns_list):
+        if i > 0:
+            time.sleep(0.5)  # Brief delay between AXFR attempts to reduce IDS triggers
         ns_clean = ns.rstrip(".")
         try:
             ns_ip = socket.gethostbyname(ns_clean)
@@ -192,10 +195,15 @@ def _attempt_zone_transfer(domain: str, result: dict[str, Any]) -> None:
 
 
 def _bruteforce_subdomains(domain: str, wordlist: list[str],
-                            threads: int) -> list[dict[str, Any]]:
+                            threads: int,
+                            batch_size: int = 50,
+                            batch_delay: float = 0.3) -> list[dict[str, Any]]:
     """
-    Resolve each subdomain candidate against DNS.
-    Returns only those that resolve, with their A/AAAA records.
+    Resolve each subdomain candidate against DNS in batches.
+
+    Processes *batch_size* candidates at a time, pausing *batch_delay* seconds
+    between batches to avoid overwhelming the target's nameservers or triggering
+    IDS alerts.
     """
     found: list[dict[str, Any]] = []
 
@@ -213,12 +221,18 @@ def _bruteforce_subdomains(domain: str, wordlist: list[str],
             }
         return None
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as pool:
-        futures = [pool.submit(_check, sub) for sub in wordlist]
-        for future in concurrent.futures.as_completed(futures):
-            res = future.result()
-            if res:
-                found.append(res)
+    # Process in batches to control query rate
+    for batch_start in range(0, len(wordlist), batch_size):
+        batch = wordlist[batch_start:batch_start + batch_size]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as pool:
+            futures = [pool.submit(_check, sub) for sub in batch]
+            for future in concurrent.futures.as_completed(futures):
+                res = future.result()
+                if res:
+                    found.append(res)
+        # Pause between batches (skip delay after final batch)
+        if batch_start + batch_size < len(wordlist):
+            time.sleep(batch_delay)
 
     return sorted(found, key=lambda x: x["subdomain"])
 
