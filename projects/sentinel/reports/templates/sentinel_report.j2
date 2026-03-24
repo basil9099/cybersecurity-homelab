@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SENTINEL — Attack Chain Correlation Report</title>
+  <style>
+    :root {
+      --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+      --border: #30363d; --text: #c9d1d9; --muted: #8b949e;
+      --blue: #58a6ff; --green: #3fb950; --yellow: #d29922;
+      --orange: #f0883e; --red: #f85149; --purple: #bc8cff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Consolas, monospace; font-size: 14px; }
+    a { color: var(--blue); text-decoration: none; }
+    h1, h2, h3 { color: var(--blue); }
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.2rem; margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+    .header-meta { color: var(--muted); font-size: 0.85rem; }
+
+    /* Stat cards */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+    .stat-card .value { font-size: 2.2rem; font-weight: bold; color: var(--blue); }
+    .stat-card .label { color: var(--muted); font-size: 0.8rem; margin-top: 0.3rem; }
+
+    /* Severity badges */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+    .badge-critical { background: #3d0f0f; color: var(--red); border: 1px solid var(--red); }
+    .badge-high     { background: #2d1a00; color: var(--orange); border: 1px solid var(--orange); }
+    .badge-medium   { background: #2d2200; color: var(--yellow); border: 1px solid var(--yellow); }
+    .badge-low      { background: #0d2a0d; color: var(--green); border: 1px solid var(--green); }
+    .badge-info     { background: #0d1a2d; color: var(--blue); border: 1px solid var(--blue); }
+    .badge-tool     { background: var(--bg3); color: var(--purple); border: 1px solid var(--purple); }
+
+    /* Tables */
+    .section { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th { background: var(--bg3); color: var(--muted); text-align: left; padding: 8px 10px; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg3); }
+
+    /* Risk score bar */
+    .risk-bar-wrap { display: flex; align-items: center; gap: 8px; }
+    .risk-bar { background: var(--bg3); border-radius: 4px; height: 8px; flex: 1; }
+    .risk-bar-fill { height: 8px; border-radius: 4px; }
+    .risk-val { font-size: 0.85rem; font-weight: 600; color: var(--text); min-width: 32px; }
+
+    /* Kill chain timeline */
+    .kc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.5rem; }
+    .kc-phase { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.8rem; }
+    .kc-phase.active { border-color: var(--blue); background: #0d1a2d; }
+    .kc-phase-name { color: var(--text); font-weight: 600; }
+    .kc-phase-count { color: var(--muted); font-size: 0.75rem; }
+
+    /* Attack paths */
+    .path-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; font-family: Consolas, monospace; font-size: 0.85rem; }
+    .path-nodes { color: var(--blue); }
+    .path-meta { color: var(--muted); font-size: 0.75rem; margin-top: 0.3rem; }
+
+    /* Entity list */
+    .entity-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .entity-tag { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; color: var(--muted); font-family: Consolas, monospace; }
+    .entity-ip { color: #79c0ff; }
+    .entity-cve { color: var(--orange); }
+    .entity-domain { color: var(--green); }
+    .entity-port { color: var(--purple); }
+
+    /* Coverage */
+    .coverage-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+    .coverage-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
+    .coverage-item.active { border-color: var(--green); }
+    .coverage-item.inactive { opacity: 0.5; }
+    .coverage-tool { font-weight: 600; margin-bottom: 0.3rem; }
+    .coverage-count { color: var(--muted); font-size: 0.8rem; }
+
+    footer { text-align: center; color: var(--muted); font-size: 0.75rem; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>&#x1F6E1; SENTINEL</h1>
+      <div style="color:var(--muted);margin-top:0.3rem;">AI Attack Chain Correlator</div>
+    </div>
+    <div class="header-meta">
+      <div>Generated: {{ generated_at }}</div>
+      <div>Tools ingested: {{ coverage | selectattr('count', 'gt', 0) | list | length }} / {{ coverage | length }}</div>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="value">{{ total_findings }}</div>
+      <div class="label">Total Findings</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">{{ campaigns | length }}</div>
+      <div class="label">Campaigns Detected</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">{{ attack_paths | length }}</div>
+      <div class="label">Attack Paths</div>
+    </div>
+    <div class="stat-card">
+      <div class="value" style="color:{% if max_risk >= 7 %}var(--red){% elif max_risk >= 4 %}var(--orange){% else %}var(--green){% endif %}">{{ "%.1f"|format(max_risk) }}</div>
+      <div class="label">Max Risk Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">{{ phase_counts | length }}</div>
+      <div class="label">ATT&amp;CK Phases Hit</div>
+    </div>
+  </div>
+
+  <!-- Kill chain timeline -->
+  <div class="section">
+    <h2>&#x1F5FA; MITRE ATT&amp;CK Kill Chain Coverage</h2>
+    <div class="kc-grid">
+    {% for phase in phase_order %}
+      {% set count = phase_counts.get(phase, 0) %}
+      <div class="kc-phase {% if count > 0 %}active{% endif %}">
+        <div class="kc-phase-name">{{ phase }}</div>
+        <div class="kc-phase-count">{{ count }} campaign{% if count != 1 %}s{% endif %}</div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+
+  <!-- Attack paths -->
+  {% if attack_paths %}
+  <div class="section">
+    <h2>&#x26A1; Top Attack Paths</h2>
+    {% for path in attack_paths[:5] %}
+    <div class="path-box">
+      <div class="path-nodes">{{ path.description }}</div>
+      <div class="path-meta">
+        Severity: <span class="badge badge-{{ path.severity }}">{{ path.severity }}</span>
+        &nbsp;|&nbsp; {{ path.nodes | length }} nodes, {{ path.edges | length }} edges
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Campaigns table -->
+  <div class="section">
+    <h2>&#x1F4CA; Detected Campaigns (sorted by risk)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Campaign</th>
+          <th>Kill Chain Phase</th>
+          <th>Risk Score</th>
+          <th>Tools</th>
+          <th>Findings</th>
+          <th>Key Entities</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for c in campaigns %}
+        <tr>
+          <td style="color:var(--muted)">{{ loop.index }}</td>
+          <td>Campaign {{ c.campaign_id }}</td>
+          <td>{{ c.kill_chain_phase }}<br><span style="color:var(--muted);font-size:0.75rem">conf: {{ "%.2f"|format(c.kill_chain_score) }}</span></td>
+          <td>
+            <div class="risk-bar-wrap">
+              <div class="risk-bar"><div class="risk-bar-fill" style="width:{{ (c.risk_score * 10)|int }}%;background:{% if c.risk_score >= 7 %}var(--red){% elif c.risk_score >= 4 %}var(--orange){% else %}var(--green){% endif %}"></div></div>
+              <span class="risk-val">{{ "%.1f"|format(c.risk_score) }}</span>
+            </div>
+          </td>
+          <td>
+            {% for t in c.tools_involved %}
+              <span class="badge badge-tool">{{ t }}</span>&nbsp;
+            {% endfor %}
+          </td>
+          <td>{{ c.finding_ids | length }}</td>
+          <td>
+            <div class="entity-list">
+              {% for ip in c.entities.get('ips', [])[:3] %}
+                <span class="entity-tag entity-ip">{{ ip }}</span>
+              {% endfor %}
+              {% for cve in c.entities.get('cves', [])[:2] %}
+                <span class="entity-tag entity-cve">{{ cve }}</span>
+              {% endfor %}
+              {% for d in c.entities.get('domains', [])[:2] %}
+                <span class="entity-tag entity-domain">{{ d }}</span>
+              {% endfor %}
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="7" style="color:var(--muted);text-align:center">No campaigns detected.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Findings detail -->
+  <div class="section">
+    <h2>&#x1F4CB; All Findings</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Severity</th>
+          <th>Title</th>
+          <th>Phase</th>
+          <th>Risk</th>
+          <th>Entities</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for f in findings_detail %}
+        <tr>
+          <td><span class="badge badge-tool">{{ f.source_tool }}</span></td>
+          <td><span class="badge badge-{{ f.severity }}">{{ f.severity }}</span></td>
+          <td style="max-width:320px">{{ f.title }}</td>
+          <td style="font-size:0.8rem;color:var(--muted)">{{ f.phase }}</td>
+          <td style="font-size:0.85rem;font-weight:600">{{ "%.1f"|format(f.risk_score) }}</td>
+          <td>
+            <div class="entity-list">
+              {% for ip in f.entities.get('ips', [])[:2] %}
+                <span class="entity-tag entity-ip">{{ ip }}</span>
+              {% endfor %}
+              {% for cve in f.entities.get('cves', [])[:2] %}
+                <span class="entity-tag entity-cve">{{ cve }}</span>
+              {% endfor %}
+              {% for d in f.entities.get('domains', [])[:1] %}
+                <span class="entity-tag entity-domain">{{ d }}</span>
+              {% endfor %}
+              {% for p in f.entities.get('ports', [])[:2] %}
+                <span class="entity-tag entity-port">:{{ p }}</span>
+              {% endfor %}
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6" style="color:var(--muted);text-align:center">No findings.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Coverage -->
+  <div class="section">
+    <h2>&#x1F4E1; Tool Coverage</h2>
+    <div class="coverage-grid">
+    {% for item in coverage %}
+      <div class="coverage-item {% if item.count > 0 %}active{% else %}inactive{% endif %}">
+        <div class="coverage-tool">{{ item.tool }}</div>
+        <div class="coverage-count">{{ item.count }} finding{% if item.count != 1 %}s{% endif %}</div>
+        {% if item.warnings %}
+          <div style="color:var(--yellow);font-size:0.75rem;margin-top:0.3rem">&#x26A0; {{ item.warnings[0] }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+
+  <footer>
+    SENTINEL &mdash; AI Attack Chain Correlator &mdash; Cybersecurity Homelab &mdash; {{ generated_at }}
+  </footer>
+
+</div>
+</body>
+</html>
