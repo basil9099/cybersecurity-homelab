@@ -26,3 +26,7 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Honeypot runtime artifacts
+*.jsonl
+.ssh_host_key
