@@ -1,0 +1,145 @@
+# PHANTOM BLE Scanner Configuration
+
+scan:
+  default_duration: 10        # seconds
+  default_rssi_threshold: -90
+  adapter: null               # null = system default
+  connection_timeout: 10      # seconds for GATT connection
+
+# Bluetooth SIG assigned company IDs (subset for manufacturer identification)
+company_ids:
+  0x004C: "Apple, Inc."
+  0x0006: "Microsoft"
+  0x00E0: "Google"
+  0x0075: "Samsung Electronics"
+  0x010F: "Xiaomi"
+  0x0059: "Nordic Semiconductor"
+  0x000D: "Texas Instruments"
+  0x0131: "Tile, Inc."
+  0x0087: "Garmin International"
+  0x00D2: "Huawei Technologies"
+
+# Standard GATT service UUIDs -> human-readable names
+standard_services:
+  "00001800-0000-1000-8000-00805f9b34fb": "Generic Access"
+  "00001801-0000-1000-8000-00805f9b34fb": "Generic Attribute"
+  "0000180a-0000-1000-8000-00805f9b34fb": "Device Information"
+  "0000180d-0000-1000-8000-00805f9b34fb": "Heart Rate"
+  "0000180f-0000-1000-8000-00805f9b34fb": "Battery Service"
+  "00001810-0000-1000-8000-00805f9b34fb": "Blood Pressure"
+  "00001816-0000-1000-8000-00805f9b34fb": "Cycling Speed and Cadence"
+  "00001819-0000-1000-8000-00805f9b34fb": "Location and Navigation"
+  "0000fe95-0000-1000-8000-00805f9b34fb": "Xiaomi Inc."
+  "0000fff0-0000-1000-8000-00805f9b34fb": "Common vendor custom base"
+
+# Security assessment rules
+assessment_rules:
+  - id: "BLE-AUTH-001"
+    title: "No Pairing Required"
+    description: "Device allows full GATT access without pairing/bonding"
+    severity: "high"
+    category: "authentication"
+    check: "check_no_pairing"
+    remediation: "Implement BLE pairing with MITM protection (Secure Connections)"
+    enabled: true
+
+  - id: "BLE-AUTH-002"
+    title: "Just Works Pairing"
+    description: "Device uses Just Works pairing (no MITM protection)"
+    severity: "medium"
+    category: "authentication"
+    check: "check_just_works_pairing"
+    remediation: "Use Numeric Comparison or Passkey Entry for MITM protection"
+    enabled: true
+
+  - id: "BLE-CHAR-001"
+    title: "Writable Characteristic Without Authentication"
+    description: "Characteristic allows unauthenticated writes"
+    severity: "high"
+    category: "configuration"
+    check: "check_unauthenticated_writes"
+    remediation: "Require authentication/encryption for write operations"
+    enabled: true
+
+  - id: "BLE-CHAR-002"
+    title: "Sensitive Data in Readable Characteristic"
+    description: "Potentially sensitive data exposed in readable characteristics"
+    severity: "medium"
+    category: "data-exposure"
+    check: "check_sensitive_data_exposure"
+    remediation: "Encrypt sensitive data or require authentication for read access"
+    enabled: true
+
+  - id: "BLE-CHAR-003"
+    title: "Device Information Service Exposed"
+    description: "Device exposes detailed hardware/firmware information"
+    severity: "low"
+    category: "data-exposure"
+    check: "check_device_info_exposure"
+    remediation: "Minimize exposed device information or require pairing"
+    enabled: true
+
+  - id: "BLE-VULN-001"
+    title: "Known Vulnerable Service UUID"
+    description: "Device advertises a service UUID with known vulnerabilities"
+    severity: "high"
+    category: "vulnerability"
+    check: "check_known_vulnerable_uuids"
+    remediation: "Update device firmware to patched version"
+    enabled: true
+
+  - id: "BLE-VULN-002"
+    title: "Legacy BLE Version Indicators"
+    description: "Device characteristics suggest BLE 4.0/4.1 without Secure Connections"
+    severity: "medium"
+    category: "vulnerability"
+    check: "check_legacy_ble"
+    remediation: "Update to firmware supporting BLE 4.2+ Secure Connections"
+    enabled: true
+
+  - id: "BLE-PRIV-001"
+    title: "Static MAC Address (Public)"
+    description: "Device uses a static public MAC address enabling tracking"
+    severity: "medium"
+    category: "privacy"
+    check: "check_static_mac"
+    remediation: "Implement BLE address randomization (LE Random Address)"
+    enabled: true
+
+  - id: "BLE-CONF-001"
+    title: "Excessive Characteristic Permissions"
+    description: "Characteristics with both read+write and no auth requirements"
+    severity: "medium"
+    category: "configuration"
+    check: "check_excessive_permissions"
+    remediation: "Apply principle of least privilege to characteristic permissions"
+    enabled: true
+
+  - id: "BLE-CONF-002"
+    title: "Notification/Indication Without Encryption"
+    description: "Characteristic supports notifications without requiring encryption"
+    severity: "low"
+    category: "configuration"
+    check: "check_unencrypted_notifications"
+    remediation: "Require encrypted link for notification/indication subscriptions"
+    enabled: true
+
+# Known vulnerable service UUIDs (vendor-specific patterns)
+known_vulnerable_uuids:
+  - uuid: "0000fff0-0000-1000-8000-00805f9b34fb"
+    description: "Common cheap IoT vendor base UUID - often has hardcoded credentials"
+    cve_references: []
+  - uuid: "0000fee7-0000-1000-8000-00805f9b34fb"
+    description: "Tencent Holdings Limited - historical auth bypass"
+    cve_references: []
+
+# Patterns that suggest sensitive data in characteristic values
+sensitive_data_patterns:
+  - pattern: "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$"
+    label: "Email address"
+  - pattern: "^\\d{3}-\\d{2}-\\d{4}$"
+    label: "SSN-like pattern"
+  - pattern: "^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$"
+    label: "MAC address"
+  - pattern: "password|passwd|pwd|token|key|secret"
+    label: "Credential keyword"
