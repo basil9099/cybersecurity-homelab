@@ -1,0 +1,97 @@
+playbook:
+  name: "Brute Force Response"
+  description: >
+    Automated response to brute force authentication attacks.
+    Blocks the attacking IP, collects authentication logs for analysis,
+    and notifies the SOC team for further investigation.
+  nist_phase: "containment"
+  version: "1.2"
+  author: "AEGIS Security Team"
+  tags:
+    - authentication
+    - brute_force
+    - external_threat
+
+  trigger_conditions:
+    alert_types:
+      - brute_force
+    min_severity: medium
+    required_tags: []
+    any_tags:
+      - ssh
+      - rdp
+      - authentication
+      - login
+
+  steps:
+    - name: "Log incident initiation"
+      action: log_event
+      parameters:
+        message: "Brute force attack detected - initiating automated response"
+        severity: high
+      timeout: 30
+      nist_phase: detection
+      continue_on_failure: true
+
+    - name: "Block attacking IP address"
+      action: block_ip
+      parameters:
+        duration: "48h"
+        firewall: "iptables"
+        comment: "Auto-blocked: brute force attack"
+      timeout: 60
+      rollback_action: log_event
+      rollback_parameters:
+        message: "Failed to block IP - manual intervention required"
+        severity: critical
+      nist_phase: containment
+
+    - name: "Collect authentication logs"
+      action: collect_evidence
+      parameters:
+        type: "auth_logs"
+        source: "/var/log/auth.log"
+        destination: "/evidence/brute_force"
+      timeout: 120
+      nist_phase: containment
+      continue_on_failure: true
+
+    - name: "Audit failed login attempts"
+      action: audit_logs
+      parameters:
+        source: "auth.log"
+        timeframe: "6h"
+      timeout: 180
+      nist_phase: detection
+      continue_on_failure: true
+
+    - name: "Notify SOC team"
+      action: notify
+      parameters:
+        channel: "soc"
+        method: "email"
+        recipients:
+          - "soc-team@org.local"
+          - "security-alerts@org.local"
+        message: "Brute force attack detected and contained. Review required."
+      timeout: 30
+      nist_phase: post_incident
+      continue_on_failure: true
+
+    - name: "Log incident completion"
+      action: log_event
+      parameters:
+        message: "Brute force response playbook completed"
+        severity: info
+      timeout: 30
+      nist_phase: post_incident
+      continue_on_failure: true
+
+  escalation_policy:
+    notify_on_failure: true
+    escalation_contacts:
+      - "soc-lead@org.local"
+      - "incident-commander@org.local"
+    escalation_threshold: 2
+    auto_escalate_severity:
+      - critical

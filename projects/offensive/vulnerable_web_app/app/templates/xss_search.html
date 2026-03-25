@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}XSS - Reflected Search{% endblock %}
+{% block content %}
+<h2>> Cross-Site Scripting: Reflected XSS</h2>
+<p class="challenge-desc">
+    The search parameter is reflected in the page without sanitization.
+</p>
+
+<div class="card">
+    <form method="GET" action="/xss/search">
+        <label for="q">Search:</label>
+        <input type="text" id="q" name="q" value="{{ query }}" autocomplete="off"
+               placeholder="Try injecting a script tag...">
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+{% if query %}
+<div class="card">
+    <h3>Search Results for:</h3>
+    {# VULN: User input rendered without escaping - reflected XSS #}
+    <p>You searched for: {{ query | safe }}</p>
+</div>
+{% endif %}
+
+{% if flag %}
+<div class="flag-box">{{ flag }}</div>
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> What happens if you put HTML tags in the search box?
+    Try: <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+</div>
+
+<div class="card">
+    <h3>Other XSS Endpoint</h3>
+    <p class="challenge-desc">Try the guestbook for stored XSS:</p>
+    <a href="/xss/guestbook" class="btn">Guestbook</a>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Auth - Broken Authentication{% endblock %}
+{% block content %}
+<h2>> Broken Authentication: JWT Bypass</h2>
+<p class="challenge-desc">
+    Login to get a JWT token, then manipulate it to escalate privileges.
+    Try the <code>alg:none</code> attack to forge an admin token.
+</p>
+
+<div class="card">
+    <form method="POST" action="/auth/login">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="off">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter password">
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+{% if result %}
+    {% if result.success %}
+    <div class="success">
+        <strong>{{ result.message }}</strong>
+    </div>
+    <div class="card">
+        <h3>Your JWT Token</h3>
+        <div class="output-box" style="word-break: break-all;">{{ result.token }}</div>
+        <p class="challenge-desc" style="margin-top: 1rem;">{{ result.hint }}</p>
+        <p class="challenge-desc">
+            Use this token with:<br>
+            <code>GET /auth/profile</code> with header <code>Authorization: Bearer &lt;token&gt;</code>
+        </p>
+    </div>
+    {% else %}
+    <div class="error">{{ result.message }}</div>
+    {% endif %}
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> Default credentials exist (admin/admin123, guest/guest).
+    After getting a token, try crafting one with <code>{"alg":"none"}</code> in the header
+    and <code>{"sub":"admin","role":"admin"}</code> in the payload. Send to <code>/auth/profile</code>.
+</div>
+
+<div class="card">
+    <h3>Quick Reference: JWT alg:none Attack</h3>
+    <pre>
+1. Encode header: {"alg":"none","typ":"JWT"} -> base64url
+2. Encode payload: {"sub":"admin","role":"admin"} -> base64url
+3. Token format: header.payload.
+4. Send: Authorization: Bearer header.payload.</pre>
+</div>
+{% endblock %}

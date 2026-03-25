@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}SQLi - Login Bypass{% endblock %}
+{% block content %}
+<h2>> SQL Injection: Login Bypass</h2>
+<p class="challenge-desc">
+    Bypass the login form using SQL injection. Default test account: <code>guest / guest</code>
+</p>
+
+<div class="card">
+    <form method="POST" action="/sqli/login">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="off">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter password">
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+{% if result %}
+    {% if result.success %}
+    <div class="success">
+        <strong>{{ result.message }}</strong><br>
+        Role: {{ result.role }}<br>
+        {% if result.secret_note %}Secret Note: {{ result.secret_note }}{% endif %}
+    </div>
+        {% if result.flag %}
+        <div class="flag-box">{{ result.flag }}</div>
+        {% endif %}
+    {% else %}
+    <div class="error">{{ result.message }}</div>
+    {% endif %}
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> What happens if the username field contains a single quote?
+    Try: <code>admin' OR '1'='1' --</code>
+</div>
+
+<div class="card">
+    <h3>Other SQLi Endpoint</h3>
+    <p class="challenge-desc">Try the product search for UNION-based injection:</p>
+    <a href="/sqli/search" class="btn">Product Search</a>
+</div>
+{% endblock %}

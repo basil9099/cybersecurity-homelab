@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEGIS Incident Report - RESP-1CC77572</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --border: #30363d;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-red: #f85149;
+            --accent-yellow: #d29922;
+            --accent-purple: #bc8cff;
+            --accent-cyan: #39d2c0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .header h1 { color: var(--accent-blue); font-size: 1.8rem; }
+        .header .subtitle { color: var(--text-secondary); margin-top: 0.5rem; }
+        .header .report-id { color: var(--accent-cyan); font-family: monospace; margin-top: 0.5rem; }
+        .section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .section-title {
+            background: var(--bg-tertiary);
+            padding: 0.8rem 1.2rem;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+            color: var(--accent-blue);
+        }
+        .section-body { padding: 1.2rem; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .info-item label { color: var(--text-secondary); font-size: 0.85rem; display: block; }
+        .info-item .value { font-weight: 500; margin-top: 0.2rem; }
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-success { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+        .status-failed { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+        .status-escalated { background: rgba(210,153,34,0.15); color: var(--accent-yellow); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.7rem;
+            background: var(--bg-tertiary);
+            color: var(--accent-blue);
+            border-bottom: 1px solid var(--border);
+        }
+        td {
+            padding: 0.7rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        .phase-tag {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .phase-detection { background: rgba(210,153,34,0.2); color: var(--accent-yellow); }
+        .phase-containment { background: rgba(248,81,73,0.2); color: var(--accent-red); }
+        .phase-eradication { background: rgba(188,140,255,0.2); color: var(--accent-purple); }
+        .phase-recovery { background: rgba(63,185,80,0.2); color: var(--accent-green); }
+        .phase-post_incident { background: rgba(57,210,192,0.2); color: var(--accent-cyan); }
+        .phase-preparation { background: rgba(88,166,255,0.2); color: var(--accent-blue); }
+        .timeline-item {
+            padding: 0.6rem 0;
+            border-left: 2px solid var(--border);
+            padding-left: 1.2rem;
+            margin-left: 0.5rem;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 1rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+        }
+        .timeline-time { color: var(--text-secondary); font-size: 0.8rem; font-family: monospace; }
+        .timeline-event { margin-top: 0.2rem; }
+        .evidence-item {
+            padding: 0.6rem;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AEGIS Incident Response Report</h1>
+            <div class="subtitle">Automated Incident Response Execution Summary</div>
+            <div class="report-id">RESP-1CC77572</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Incident Overview</div>
+            <div class="section-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Playbook</label>
+                        <div class="value">Brute Force Response</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Alert ID</label>
+                        <div class="value" style="font-family:monospace">ALERT-314982EF</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Status</label>
+                        <div class="value">
+                            <span class="status-badge status-success">SUCCESS</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <label>Duration</label>
+                        <div class="value">4.65s</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Alert Type</label>
+                        <div class="value">brute_force</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Severity</label>
+                        <div class="value">HIGH</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Source IP</label>
+                        <div class="value" style="font-family:monospace">192.168.1.100</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Destination IP</label>
+                        <div class="value" style="font-family:monospace">10.0.0.5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="section">
+            <div class="section-title">Response Steps (NIST 800-61 Mapped)</div>
+            <div class="section-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Step</th>
+                            <th>Action</th>
+                            <th>NIST Phase</th>
+                            <th>Status</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    
+                        <tr>
+                            <td>1</td>
+                            <td>Log incident initiation</td>
+                            <td><code>log_event</code></td>
+                            <td><span class="phase-tag phase-detection">detection</span></td>
+                            <td><span class="status-badge status-success">success</span></td>
+                            <td>0.46s</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>2</td>
+                            <td>Block attacking IP address</td>
+                            <td><code>block_ip</code></td>
+                            <td><span class="phase-tag phase-containment">containment</span></td>
+                            <td><span class="status-badge status-success">success</span></td>
+                            <td>0.94s</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>3</td>
+                            <td>Collect authentication logs</td>
+                            <td><code>collect_evidence</code></td>
+                            <td><span class="phase-tag phase-containment">containment</span></td>
+                            <td><span class="status-badge status-success">success</span></td>
+                            <td>1.13s</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>4</td>
+                            <td>Audit failed login attempts</td>
+                            <td><code>audit_logs</code></td>
+                            <td><span class="phase-tag phase-detection">detection</span></td>
+                            <td><span class="status-badge status-success">success</span></td>
+                            <td>0.92s</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>5</td>
+                            <td>Notify SOC team</td>
+                            <td><code>notify</code></td>
+                            <td><span class="phase-tag phase-post_incident">post_incident</span></td>
+                            <td><span class="status-badge status-success">success</span></td>
+                            <td>0.42s</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>6</td>
+                            <td>Log incident completion</td>
+                            <td><code>log_event</code></td>
+                            <td><span class="phase-tag phase-post_incident">post_incident</span></td>
+                            <td><span class="status-badge status-success">success</span></td>
+                            <td>0.77s</td>
+                        </tr>
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Execution Timeline</div>
+            <div class="section-body">
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:06.146582</div>
+                    <div class="timeline-event">
+                        Step started: Log incident initiation
+                        <span class="phase-tag phase-detection">detection</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:06.611485</div>
+                    <div class="timeline-event">
+                        Step completed: Log incident initiation
+                        <span class="phase-tag phase-detection">detection</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:06.611515</div>
+                    <div class="timeline-event">
+                        Step started: Block attacking IP address
+                        <span class="phase-tag phase-containment">containment</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:07.550648</div>
+                    <div class="timeline-event">
+                        Step completed: Block attacking IP address
+                        <span class="phase-tag phase-containment">containment</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:07.550684</div>
+                    <div class="timeline-event">
+                        Step started: Collect authentication logs
+                        <span class="phase-tag phase-containment">containment</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:08.681799</div>
+                    <div class="timeline-event">
+                        Step completed: Collect authentication logs
+                        <span class="phase-tag phase-containment">containment</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:08.681833</div>
+                    <div class="timeline-event">
+                        Step started: Audit failed login attempts
+                        <span class="phase-tag phase-detection">detection</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:09.606566</div>
+                    <div class="timeline-event">
+                        Step completed: Audit failed login attempts
+                        <span class="phase-tag phase-detection">detection</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:09.606605</div>
+                    <div class="timeline-event">
+                        Step started: Notify SOC team
+                        <span class="phase-tag phase-post_incident">post_incident</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:10.026855</div>
+                    <div class="timeline-event">
+                        Step completed: Notify SOC team
+                        <span class="phase-tag phase-post_incident">post_incident</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:10.026886</div>
+                    <div class="timeline-event">
+                        Step started: Log incident completion
+                        <span class="phase-tag phase-post_incident">post_incident</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">2026-03-25T20:25:10.792599</div>
+                    <div class="timeline-event">
+                        Step completed: Log incident completion
+                        <span class="phase-tag phase-post_incident">post_incident</span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        
+        <div class="section">
+            <div class="section-title">Evidence Collected (6 artifacts)</div>
+            <div class="section-body">
+                
+                <div class="evidence-item">
+                    <strong>Log incident initiation</strong>
+                    
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;nist_phase: detection
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;log_entry: [2026-03-25T20:25:06.610620] [HIGH] Brute force attack detected - initiating automated response
+                    
+                    
+                </div>
+                
+                <div class="evidence-item">
+                    <strong>Block attacking IP address</strong>
+                    
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;nist_phase: containment
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;blocked_ip: 192.168.1.100
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;duration: 48h
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;firewall: iptables
+                    
+                    
+                </div>
+                
+                <div class="evidence-item">
+                    <strong>Collect authentication logs</strong>
+                    
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;nist_phase: containment
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;evidence_type: auth_logs
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;source: /var/log/auth.log
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;destination: /evidence/brute_force
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;integrity_hash: sha256:360cfede01e3f14e38034b17d99e8c63
+                    
+                    
+                </div>
+                
+                <div class="evidence-item">
+                    <strong>Audit failed login attempts</strong>
+                    
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;nist_phase: detection
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;log_source: auth.log
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;anomalies: 9
+                    
+                    
+                </div>
+                
+                <div class="evidence-item">
+                    <strong>Notify SOC team</strong>
+                    
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;nist_phase: post_incident
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;channel: soc
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;method: email
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;message_id: MSG-664634
+                    
+                    
+                </div>
+                
+                <div class="evidence-item">
+                    <strong>Log incident completion</strong>
+                    
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;nist_phase: post_incident
+                    
+                    
+                    
+                    <br>&nbsp;&nbsp;log_entry: [2026-03-25T20:25:10.791922] [INFO] Brute force response playbook completed
+                    
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+
+        <div class="section">
+            <div class="section-title">NIST 800-61 Phase Summary</div>
+            <div class="section-body">
+                <div class="info-grid">
+                    
+                    <div class="info-item">
+                        <label><span class="phase-tag phase-detection">detection</span></label>
+                        <div class="value">2 step(s)</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <label><span class="phase-tag phase-containment">containment</span></label>
+                        <div class="value">2 step(s)</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <label><span class="phase-tag phase-post_incident">post_incident</span></label>
+                        <div class="value">2 step(s)</div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Generated by AEGIS Incident Response Engine</p>
+            <p>Report generated at 2026-03-25T20:25:10.800568</p>
+            <p style="margin-top:0.5rem; color: var(--accent-yellow);">
+                CONFIDENTIAL - FOR AUTHORIZED PERSONNEL ONLY
+            </p>
+        </div>
+    </div>
+</body>
+</html>

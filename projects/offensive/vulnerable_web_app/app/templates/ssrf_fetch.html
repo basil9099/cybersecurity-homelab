@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}SSRF - URL Fetcher{% endblock %}
+{% block content %}
+<h2>> Server-Side Request Forgery: URL Fetcher</h2>
+<p class="challenge-desc">
+    Enter a URL to fetch. The server will make the request on your behalf with no restrictions.
+</p>
+
+<div class="card">
+    <form method="POST" action="/ssrf/fetch">
+        <label for="url">URL to Fetch:</label>
+        <input type="text" id="url" name="url" value="{{ url }}"
+               placeholder="https://example.com" autocomplete="off">
+        <button type="submit">Fetch URL</button>
+    </form>
+</div>
+
+{% if response_data %}
+<div class="card">
+    <h3>Response (Status: {{ response_data.status }})</h3>
+    <div style="color: #555; font-size: 0.8rem; margin-bottom: 0.5rem;">
+        URL: {{ response_data.url }}
+    </div>
+    <div class="output-box">{{ response_data.body }}</div>
+</div>
+
+{% if "FLAG{" in response_data.body %}
+<div class="flag-box">FLAG{ssrf_internal_service_accessed}</div>
+{% endif %}
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> The server makes requests without URL validation. Try accessing internal services:<br>
+    <code>http://127.0.0.1:8080/internal/secret</code><br>
+    <code>http://169.254.169.254/latest/meta-data/</code> (AWS metadata)
+</div>
+{% endblock %}

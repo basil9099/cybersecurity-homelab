@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Path Traversal - File Reader{% endblock %}
+{% block content %}
+<h2>> Path Traversal: File Reader</h2>
+<p class="challenge-desc">
+    Read files from the server's sandbox directory. The filename parameter lacks proper sanitization.
+</p>
+
+<div class="card">
+    <form method="GET" action="/files/read">
+        <label for="filename">Filename:</label>
+        <input type="text" id="filename" name="filename" value="{{ filename }}"
+               placeholder="welcome.txt" autocomplete="off">
+        <button type="submit">Read File</button>
+    </form>
+    <div style="margin-top: 0.8rem;">
+        <span style="color: #555; font-size: 0.8rem;">Quick links: </span>
+        <a href="/files/read?filename=welcome.txt" style="font-size: 0.85rem;">welcome.txt</a> |
+        <a href="/files/read?filename=notes.txt" style="font-size: 0.85rem;">notes.txt</a> |
+        <a href="/files/read?filename=secret.txt" style="font-size: 0.85rem;">secret.txt</a>
+    </div>
+</div>
+
+{% if content %}
+<div class="card">
+    <h3>File Contents: {{ filename }}</h3>
+    <div class="output-box">{{ content }}</div>
+</div>
+{% endif %}
+
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+{% if flag %}
+<div class="flag-box">{{ flag }}</div>
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> The filename is joined to a base path without sanitization.
+    Try: <code>../../../etc/passwd</code> to traverse outside the sandbox.
+</div>
+{% endblock %}

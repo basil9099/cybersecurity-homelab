@@ -1,0 +1,114 @@
+playbook:
+  name: "Unauthorized Access Response"
+  description: >
+    Response to unauthorized access attempts or confirmed unauthorized
+    access events. Disables the compromised account, reviews active
+    sessions, performs a comprehensive log audit, and notifies the
+    security operations team.
+  nist_phase: "containment"
+  version: "1.3"
+  author: "AEGIS Security Team"
+  tags:
+    - access_control
+    - unauthorized
+    - account_compromise
+
+  trigger_conditions:
+    alert_types:
+      - unauthorized_access
+    min_severity: medium
+    required_tags: []
+    any_tags:
+      - unauthorized
+      - access_violation
+      - account_compromise
+      - privilege_abuse
+      - authentication
+
+  steps:
+    - name: "Log unauthorized access detection"
+      action: log_event
+      parameters:
+        message: "Unauthorized access detected - initiating account lockdown and investigation"
+        severity: high
+      timeout: 30
+      nist_phase: detection
+      continue_on_failure: true
+
+    - name: "Disable compromised account"
+      action: disable_account
+      parameters:
+        directory: "active_directory"
+      timeout: 60
+      rollback_action: log_event
+      rollback_parameters:
+        message: "Failed to disable account - manual account lockdown required immediately"
+        severity: critical
+      nist_phase: containment
+
+    - name: "Review and terminate active sessions"
+      action: review_sessions
+      parameters:
+        target: "compromised_user"
+      timeout: 120
+      nist_phase: containment
+      continue_on_failure: true
+
+    - name: "Audit authentication logs"
+      action: audit_logs
+      parameters:
+        source: "authentication"
+        timeframe: "48h"
+      timeout: 180
+      nist_phase: detection
+      continue_on_failure: true
+
+    - name: "Audit authorization and access logs"
+      action: audit_logs
+      parameters:
+        source: "authorization"
+        timeframe: "48h"
+      timeout: 180
+      nist_phase: detection
+      continue_on_failure: true
+
+    - name: "Collect access control evidence"
+      action: collect_evidence
+      parameters:
+        type: "access_logs"
+        source: "identity_provider"
+        destination: "/evidence/unauthorized_access"
+      timeout: 120
+      nist_phase: containment
+      continue_on_failure: true
+
+    - name: "Notify security operations"
+      action: notify
+      parameters:
+        channel: "soc"
+        method: "email"
+        recipients:
+          - "soc-team@org.local"
+          - "identity-team@org.local"
+        message: "Unauthorized access incident - account disabled, sessions reviewed. Investigation ongoing."
+      timeout: 30
+      nist_phase: post_incident
+      continue_on_failure: true
+
+    - name: "Log playbook completion"
+      action: log_event
+      parameters:
+        message: "Unauthorized access response playbook completed - pending human review"
+        severity: info
+      timeout: 30
+      nist_phase: post_incident
+      continue_on_failure: true
+
+  escalation_policy:
+    notify_on_failure: true
+    escalation_contacts:
+      - "soc-lead@org.local"
+      - "identity-team-lead@org.local"
+    escalation_threshold: 2
+    auto_escalate_severity:
+      - critical
