@@ -69,30 +69,6 @@ python3 juiceshop_brute.py --threads 20 --wordlist top1000.txt -o results.txt
 
 ---
 
-## Screenshots
-
-> These demonstrate the attack sequence and successful credential discovery.
-
-### Brute Force Script (Part 1)
-
-![Brute Force Script - Part 1](../../screenshots/brute_force_script.png)
-
-### Brute Force Script (Part 2)
-
-![Brute Force Script - Part 2](../../screenshots/brute_force_script_pt2.png)
-
-### Script Output: Successful Password Crack
-
-![Script Output - Success](../../screenshots/script_success.png)
-![Script Output - Success (Alt)](../../screenshots/script_success2.png)
-
-### Successful Login (in DVWA)
-
-![Successful Login Screenshot 1](../../screenshots/successful_login1.png)
-![Successful Login Screenshot 2](../../screenshots/successful_login2.png)
-
----
-
 ## File Structure
 
 ```
