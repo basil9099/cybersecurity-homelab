@@ -1,0 +1,8 @@
+# Core BLE
+bleak>=0.21.0
+
+# Configuration
+pyyaml>=6.0
+
+# Terminal colors (optional, graceful fallback)
+colorama>=0.4.6
