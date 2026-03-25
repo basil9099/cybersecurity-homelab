@@ -113,7 +113,7 @@ class Dashboard:
             "",
         )
 
-        return Panel(grid, title="[bold]Honeypot Dashboard[/bold]", border_style="bright_blue")
+        return Panel(grid, title="[bold]Mirage Dashboard[/bold]", border_style="bright_blue")
 
     def _events_table(self) -> Panel:
         table = Table(expand=True, show_edge=False, pad_edge=False)
