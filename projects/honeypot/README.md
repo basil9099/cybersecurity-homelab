@@ -1,4 +1,4 @@
-# Honeypot - Multi-Protocol Honeypot System
+# Mirage - Multi-Protocol Honeypot System
 
 A modular, multi-protocol honeypot system designed for cybersecurity home labs. Emulates SSH, HTTP, FTP, and Telnet services to capture attacker behavior, credentials, and command sequences.
 

@@ -37,14 +37,14 @@ from event_logging.event_logger import EventLogger
 # ---------------------------------------------------------------------------
 
 _BANNER = r"""
-  _  _                        _
- | || |___ _ _  ___ _  _ _ __| |_
- | __ / _ \ ' \/ -_) || | '_ \ _|
- |_||_\___/_||_\___|\_, | .__/\__|
-                     |__/|_|
+ __    __     __     ______     ______     ______     ______
+/\ "-./  \   /\ \   /\  == \   /\  __ \   /\  ___\   /\  ___\
+\ \ \-./\ \  \ \ \  \ \  __<   \ \  __ \  \ \ \__ \  \ \  __\
+ \ \_\ \ \_\  \ \_\  \ \_\ \_\  \ \_\ \_\  \ \_____\  \ \_____\
+  \/_/  \/_/   \/_/   \/_/ /_/   \/_/\/_/   \/_____/   \/_____/
 
-       [ Multi-Protocol Honeypot ]
-   SSH  |  HTTP  |  FTP  |  Telnet
+            [ Multi-Protocol Honeypot ]
+        SSH  |  HTTP  |  FTP  |  Telnet
 """
 
 # ---------------------------------------------------------------------------
@@ -92,7 +92,7 @@ def _print_disclaimer() -> None:
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Multi-protocol honeypot system for cybersecurity home labs.",
+        description="Mirage — Multi-protocol honeypot system for cybersecurity home labs.",
     )
     parser.add_argument(
         "--config", "-c",
