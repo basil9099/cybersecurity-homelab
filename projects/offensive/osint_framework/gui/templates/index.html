@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSINT Framework — Web GUI</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+
+  /* Header */
+  .header { background: #16213e; padding: 20px 30px; border-bottom: 3px solid #4fc3f7; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 1.4em; color: #fff; }
+  .header h1 span { color: #4fc3f7; }
+  .header .version { color: #666; font-size: 0.85em; }
+
+  /* Container */
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  /* Panels */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Cards / sections */
+  .card { background: #16213e; border-radius: 8px; padding: 20px; margin-bottom: 18px; }
+  .card h2 { color: #4fc3f7; font-size: 1.15em; margin-bottom: 14px; border-bottom: 1px solid #263238; padding-bottom: 8px; }
+  .card h3 { color: #80cbc4; font-size: 0.95em; margin: 12px 0 6px; }
+
+  /* Form elements */
+  label { display: block; color: #aaa; font-size: 0.85em; margin-bottom: 4px; margin-top: 10px; }
+  input[type="text"], input[type="number"], input[type="password"], input[type="date"] {
+    width: 100%; padding: 8px 10px; background: #0d1b2a; border: 1px solid #263238; border-radius: 4px;
+    color: #e0e0e0; font-size: 0.9em; outline: none;
+  }
+  input:focus { border-color: #4fc3f7; }
+  .input-sm { max-width: 180px; }
+
+  /* Checkboxes */
+  .checkbox-grid { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 6px; }
+  .checkbox-grid label { display: flex; align-items: center; gap: 6px; color: #e0e0e0; font-size: 0.9em; cursor: pointer; margin: 0; }
+  .checkbox-grid input[type="checkbox"] { accent-color: #4fc3f7; width: 16px; height: 16px; }
+
+  /* Collapsible */
+  .collapsible-header { cursor: pointer; color: #80cbc4; font-size: 0.95em; user-select: none; padding: 6px 0; }
+  .collapsible-header::before { content: '\25B6'; margin-right: 8px; font-size: 0.75em; display: inline-block; transition: transform 0.2s; }
+  .collapsible-header.open::before { transform: rotate(90deg); }
+  .collapsible-body { display: none; padding: 4px 0 8px 20px; }
+  .collapsible-body.open { display: block; }
+
+  /* Buttons */
+  .btn { padding: 10px 28px; border: none; border-radius: 4px; font-size: 0.95em; cursor: pointer; font-weight: 600; }
+  .btn-primary { background: #4fc3f7; color: #0d1b2a; }
+  .btn-primary:hover { background: #039be5; }
+  .btn-primary:disabled { background: #263238; color: #666; cursor: not-allowed; }
+  .btn-secondary { background: #263238; color: #80cbc4; }
+  .btn-secondary:hover { background: #37474f; }
+  .btn-bar { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+  /* Grid layout for form */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+  @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } }
+
+  /* Progress panel */
+  .log-area { background: #0d1b2a; border-radius: 6px; padding: 14px; max-height: 500px; overflow-y: auto; font-family: 'Consolas', 'Courier New', monospace; font-size: 0.85em; line-height: 1.6; }
+  .log-section { color: #4fc3f7; font-weight: bold; border-top: 1px solid #263238; margin-top: 8px; padding-top: 6px; }
+  .log-info { color: #b0bec5; }
+  .log-ok { color: #66bb6a; }
+  .log-warn { color: #ff7043; }
+  .log-error { color: #ef5350; font-weight: bold; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #4fc3f7; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results dashboard */
+  .risk-badge { display: inline-block; padding: 4px 14px; border-radius: 4px; font-weight: bold; font-size: 1.05em; color: #fff; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87em; margin-top: 6px; }
+  th { background: #0d1b2a; color: #aaa; text-align: left; padding: 7px 10px; }
+  td { padding: 7px 10px; border-bottom: 1px solid #1e2d3d; word-break: break-all; }
+  tr:hover td { background: #0d1b2a; }
+  .tag { display: inline-block; background: #263238; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin: 2px; }
+  .warn-text { color: #ff7043; }
+  code { font-family: monospace; background: #0d1b2a; padding: 1px 4px; border-radius: 3px; }
+  .empty { color: #555; font-style: italic; }
+
+  /* Footer */
+  footer { text-align: center; padding: 20px; color: #444; font-size: 0.8em; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>OSINT</span> Reconnaissance Framework</h1>
+  <span class="version">v1.0.0 &mdash; Web GUI</span>
+</div>
+
+<div class="container">
+
+  <!-- ========== CONFIG PANEL ========== -->
+  <div id="panel-config" class="panel active">
+
+    <div class="card">
+      <h2>Target</h2>
+      <label for="target">Domain or IP address</label>
+      <input type="text" id="target" placeholder="example.com" autocomplete="off">
+      <p id="target-error" style="color:#ef5350;font-size:0.85em;margin-top:4px;display:none"></p>
+    </div>
+
+    <div class="card">
+      <h2>Modules</h2>
+      <div class="checkbox-grid">
+        <label><input type="checkbox" name="module" value="whois" checked> WHOIS / RDAP</label>
+        <label><input type="checkbox" name="module" value="dns" checked> DNS Enumeration</label>
+        <label><input type="checkbox" name="module" value="github" checked> GitHub Recon</label>
+        <label><input type="checkbox" name="module" value="breach" checked> Breach Check (HIBP)</label>
+        <label><input type="checkbox" name="module" value="shodan" checked> Shodan</label>
+        <label><input type="checkbox" name="module" value="crtsh" checked> Certificate Transparency</label>
+        <label><input type="checkbox" name="module" value="wayback" checked> Wayback Machine</label>
+        <label><input type="checkbox" name="module" value="dorks" checked> Search Dorks</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>API Keys</h2>
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">API keys (optional &mdash; expand data sources)</div>
+      <div class="collapsible-body">
+        <div class="form-grid">
+          <div><label for="hibp_key">HaveIBeenPwned API Key</label><input type="password" id="hibp_key" placeholder="HIBP v3 key"></div>
+          <div><label for="shodan_key">Shodan API Key</label><input type="password" id="shodan_key" placeholder="Shodan key"></div>
+          <div><label for="github_token">GitHub Token</label><input type="password" id="github_token" placeholder="ghp_..."></div>
+          <div><label for="google_key">Google API Key</label><input type="password" id="google_key" placeholder="Google Custom Search key"></div>
+          <div><label for="google_cse_id">Google CSE ID</label><input type="text" id="google_cse_id" placeholder="Programmable Search Engine ID"></div>
+          <div><label for="bing_key">Bing Search API Key</label><input type="password" id="bing_key" placeholder="Bing key"></div>
+          <div><label for="dehashed_email">DeHashed Email</label><input type="text" id="dehashed_email" placeholder="account@example.com"></div>
+          <div><label for="dehashed_key">DeHashed API Key</label><input type="password" id="dehashed_key" placeholder="DeHashed key"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Options</h2>
+      <div class="collapsible-header" onclick="toggleCollapsible(this)">Advanced options</div>
+      <div class="collapsible-body">
+        <div class="form-grid">
+          <div><label for="github_org">GitHub Organisation</label><input type="text" id="github_org" placeholder="Auto-detected from target"></div>
+          <div><label for="github_users">GitHub Users (comma-separated)</label><input type="text" id="github_users" placeholder="user1, user2"></div>
+          <div><label for="emails">Email Addresses (comma-separated)</label><input type="text" id="emails" placeholder="admin@example.com, ceo@example.com"></div>
+          <div><label for="dns_threads">DNS Brute-force Threads</label><input type="number" id="dns_threads" value="20" min="1" max="200" class="input-sm"></div>
+          <div><label for="wayback_limit">Wayback Snapshot Limit</label><input type="number" id="wayback_limit" value="50" min="1" max="500" class="input-sm"></div>
+          <div><label for="wayback_from">Wayback From Date</label><input type="date" id="wayback_from" class="input-sm"></div>
+          <div><label for="wayback_to">Wayback To Date</label><input type="date" id="wayback_to" class="input-sm"></div>
+          <div><label for="shodan_query">Custom Shodan Query</label><input type="text" id="shodan_query" placeholder='org:"Example Corp"'></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-bar">
+      <button class="btn btn-primary" id="btn-start" onclick="startScan()">Start Scan</button>
+    </div>
+  </div>
+
+  <!-- ========== PROGRESS PANEL ========== -->
+  <div id="panel-progress" class="panel">
+    <div class="card">
+      <h2><span class="spinner"></span> Scan in Progress</h2>
+      <div class="log-area" id="log-area"></div>
+      <div class="btn-bar" style="margin-top:12px">
+        <button class="btn btn-secondary" id="btn-back-progress" onclick="backToConfig()" disabled>Back to Config</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== RESULTS PANEL ========== -->
+  <div id="panel-results" class="panel">
+    <div class="card">
+      <h2>Scan Complete</h2>
+      <p>Target: <strong id="res-target"></strong> &nbsp;|&nbsp; Generated: <span id="res-generated"></span></p>
+      <p style="margin-top:8px">Overall Risk: <span class="risk-badge" id="res-risk-badge"></span></p>
+      <div class="btn-bar">
+        <button class="btn btn-secondary" onclick="downloadReport('json')">Download JSON</button>
+        <button class="btn btn-secondary" onclick="downloadReport('text')">Download Text</button>
+        <button class="btn btn-secondary" onclick="downloadReport('html')">Download HTML</button>
+        <button class="btn btn-secondary" onclick="backToConfig()">New Scan</button>
+      </div>
+    </div>
+
+    <!-- Risk Findings -->
+    <div class="card">
+      <h2>Risk Findings</h2>
+      <table><thead><tr><th>Severity</th><th>Category</th><th>Description</th></tr></thead>
+      <tbody id="res-findings"></tbody></table>
+    </div>
+
+    <div class="grid2">
+      <!-- Organisation -->
+      <div class="card">
+        <h2>Organisation</h2>
+        <table><tbody id="res-org"></tbody></table>
+        <div id="res-hosting-hints"></div>
+      </div>
+      <!-- Email Security -->
+      <div class="card">
+        <h2>Email Security</h2>
+        <table><tbody id="res-email-sec"></tbody></table>
+        <h3>MX Servers</h3>
+        <table><thead><tr><th>Priority</th><th>Host</th></tr></thead>
+        <tbody id="res-mx"></tbody></table>
+      </div>
+    </div>
+
+    <!-- DNS Records -->
+    <div class="card">
+      <h2>DNS Records</h2>
+      <div id="res-dns-records"></div>
+    </div>
+
+    <!-- Subdomains -->
+    <div class="card">
+      <h2 id="res-sub-title">Subdomains</h2>
+      <table><thead><tr><th>Subdomain</th><th>A Records</th><th>CNAME</th><th>Source</th></tr></thead>
+      <tbody id="res-subdomains"></tbody></table>
+    </div>
+
+    <!-- People -->
+    <div class="card">
+      <h2>People &amp; Employees</h2>
+      <div id="res-people"></div>
+    </div>
+
+    <!-- Breach Exposure -->
+    <div class="card">
+      <h2>Breach Exposure</h2>
+      <div id="res-breach"></div>
+    </div>
+
+    <!-- Wayback -->
+    <div class="card">
+      <h2>Historical Data (Wayback Machine)</h2>
+      <table><thead><tr><th>Timestamp</th><th>Status</th><th>URL</th></tr></thead>
+      <tbody id="res-wayback"></tbody></table>
+    </div>
+
+    <!-- Relationships -->
+    <div class="card">
+      <h2>Entity Relationships</h2>
+      <table><thead><tr><th>From</th><th>Relationship</th><th>To</th></tr></thead>
+      <tbody id="res-relationships"></tbody></table>
+    </div>
+  </div>
+
+</div>
+
+<footer>OSINT Framework v1.0 &mdash; For authorized penetration testing and threat intelligence use only.</footer>
+
+<script>
+/* ------------------------------------------------------------------
+   Helpers
+   ------------------------------------------------------------------ */
+const $ = id => document.getElementById(id);
+const esc = s => { const d = document.createElement('div'); d.textContent = String(s); return d.innerHTML; };
+
+function toggleCollapsible(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  $('panel-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+let currentJobId = null;
+
+/* ------------------------------------------------------------------
+   Start Scan
+   ------------------------------------------------------------------ */
+async function startScan() {
+  const target = $('target').value.trim();
+  if (!target) {
+    $('target-error').textContent = 'Please enter a target domain or IP.';
+    $('target-error').style.display = 'block';
+    return;
+  }
+  $('target-error').style.display = 'none';
+
+  const modules = [...document.querySelectorAll('input[name="module"]:checked')].map(c => c.value);
+  if (modules.length === 0) {
+    $('target-error').textContent = 'Select at least one module.';
+    $('target-error').style.display = 'block';
+    return;
+  }
+
+  // Collect API keys
+  const api_keys = {};
+  ['hibp_key','shodan_key','github_token','google_key','google_cse_id','bing_key','dehashed_email','dehashed_key'].forEach(k => {
+    const v = $(k).value.trim();
+    if (v) api_keys[k] = v;
+  });
+
+  // Collect options
+  const options = {};
+  const github_org = $('github_org').value.trim();
+  if (github_org) options.github_org = github_org;
+
+  const github_users = $('github_users').value.trim();
+  if (github_users) options.github_users = github_users.split(',').map(s => s.trim()).filter(Boolean);
+
+  const emails = $('emails').value.trim();
+  if (emails) options.emails = emails.split(',').map(s => s.trim()).filter(Boolean);
+
+  options.dns_threads = parseInt($('dns_threads').value) || 20;
+  options.wayback_limit = parseInt($('wayback_limit').value) || 50;
+
+  const wf = $('wayback_from').value;
+  if (wf) options.wayback_from = wf.replace(/-/g, '');
+  const wt = $('wayback_to').value;
+  if (wt) options.wayback_to = wt.replace(/-/g, '');
+
+  const sq = $('shodan_query').value.trim();
+  if (sq) options.shodan_query = sq;
+
+  const payload = { target, modules, api_keys, options };
+
+  // Disable button
+  $('btn-start').disabled = true;
+  $('btn-start').textContent = 'Starting...';
+
+  try {
+    const resp = await fetch('/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.detail || 'Scan request failed');
+    }
+    const data = await resp.json();
+    currentJobId = data.job_id;
+
+    // Switch to progress view
+    $('log-area').innerHTML = '';
+    $('btn-back-progress').disabled = true;
+    showPanel('progress');
+    connectSSE(currentJobId);
+  } catch (e) {
+    $('target-error').textContent = e.message;
+    $('target-error').style.display = 'block';
+  } finally {
+    $('btn-start').disabled = false;
+    $('btn-start').textContent = 'Start Scan';
+  }
+}
+
+/* ------------------------------------------------------------------
+   SSE Streaming
+   ------------------------------------------------------------------ */
+function connectSSE(jobId) {
+  const logArea = $('log-area');
+  const evtSource = new EventSource('/api/scan/' + jobId + '/stream');
+
+  evtSource.onmessage = function(e) {
+    const ev = JSON.parse(e.data);
+
+    if (ev.event === 'section') {
+      logArea.innerHTML += '<div class="log-section">' + esc(ev.title) + '</div>';
+    } else if (ev.event === 'progress') {
+      const cls = { info: 'log-info', ok: 'log-ok', warn: 'log-warn' }[ev.level] || 'log-info';
+      const prefix = { info: '[*]', ok: '[+]', warn: '[!]' }[ev.level] || '[*]';
+      logArea.innerHTML += '<div class="' + cls + '">' + esc(prefix + ' ' + ev.message) + '</div>';
+    } else if (ev.event === 'done') {
+      evtSource.close();
+      logArea.innerHTML += '<div class="log-ok" style="font-weight:bold;margin-top:8px">[+] Scan complete!</div>';
+      $('btn-back-progress').disabled = false;
+      renderDashboard(ev.profile);
+      setTimeout(() => showPanel('results'), 800);
+    } else if (ev.event === 'error') {
+      evtSource.close();
+      logArea.innerHTML += '<div class="log-error">[!] Error: ' + esc(ev.message) + '</div>';
+      $('btn-back-progress').disabled = false;
+    }
+
+    logArea.scrollTop = logArea.scrollHeight;
+  };
+
+  evtSource.onerror = function() {
+    evtSource.close();
+    logArea.innerHTML += '<div class="log-error">[!] Connection lost.</div>';
+    $('btn-back-progress').disabled = false;
+  };
+}
+
+/* ------------------------------------------------------------------
+   Render Results Dashboard
+   ------------------------------------------------------------------ */
+const RISK_COLOURS = {
+  CRITICAL: '#d32f2f', HIGH: '#f57c00', MEDIUM: '#fbc02d',
+  LOW: '#388e3c', INFO: '#0288d1', UNKNOWN: '#757575',
+};
+
+function renderDashboard(profile) {
+  const meta = profile.meta;
+  const risk = profile.risk_assessment.overall_risk || 'UNKNOWN';
+
+  $('res-target').textContent = meta.target;
+  $('res-generated').textContent = meta.generated_at;
+  const badge = $('res-risk-badge');
+  badge.textContent = risk;
+  badge.style.background = RISK_COLOURS[risk] || '#757575';
+
+  // Findings
+  const findings = profile.risk_assessment.findings || [];
+  $('res-findings').innerHTML = findings.length
+    ? findings.map(f =>
+        '<tr><td style="color:' + (RISK_COLOURS[f.severity]||'#757575') + ';font-weight:bold">'
+        + esc(f.severity) + '</td><td>' + esc(f.category) + '</td><td>' + esc(f.description) + '</td></tr>'
+      ).join('')
+    : '<tr><td colspan="3" class="empty">No findings collected</td></tr>';
+
+  // Organisation
+  const org = profile.organisation || {};
+  const orgKeys = ['domain','registrar','registrant_name','registrant_org','registrant_email','registrant_country','created','expires'];
+  $('res-org').innerHTML = orgKeys.map(k => {
+    const v = org[k];
+    if (!v) return '';
+    return '<tr><th>' + esc(k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())) + '</th><td>' + esc(Array.isArray(v)?v.join(', '):v) + '</td></tr>';
+  }).join('');
+  const hints = org.hosting_hints || [];
+  $('res-hosting-hints').innerHTML = hints.length
+    ? '<h3>Hosting Hints</h3>' + hints.map(h => '<span class="tag">' + esc(h) + '</span>').join('')
+    : '';
+
+  // Email Security
+  const es = (profile.infrastructure.dns || {}).email_security || {};
+  let esHtml = '';
+  if (es.spf) esHtml += '<tr><th>SPF</th><td>' + esc(es.spf) + '</td></tr>';
+  else esHtml += '<tr><td colspan="2" class="warn-text">No SPF record</td></tr>';
+  if (es.dmarc) { esHtml += '<tr><th>DMARC</th><td>' + esc(es.dmarc) + '</td></tr>'; esHtml += '<tr><th>DMARC Policy</th><td>' + esc(es.dmarc_policy||'') + '</td></tr>'; }
+  else esHtml += '<tr><td colspan="2" class="warn-text">No DMARC record</td></tr>';
+  $('res-email-sec').innerHTML = esHtml;
+
+  const mx = (profile.infrastructure.dns || {}).mx_servers || [];
+  $('res-mx').innerHTML = mx.map(m => '<tr><td>' + esc(m.priority) + '</td><td>' + esc(m.host) + '</td></tr>').join('')
+    || '<tr><td colspan="2" class="empty">None</td></tr>';
+
+  // DNS Records
+  const records = (profile.infrastructure.dns || {}).records || {};
+  let dnsHtml = '';
+  for (const [rtype, vals] of Object.entries(records)) {
+    dnsHtml += '<h3>' + esc(rtype) + '</h3><ul>' + (vals||[]).map(v => '<li><code>' + esc(v) + '</code></li>').join('') + '</ul>';
+  }
+  $('res-dns-records').innerHTML = dnsHtml || '<p class="empty">No DNS records collected</p>';
+
+  // Subdomains
+  const subs = profile.infrastructure.subdomains || [];
+  const certOnly = profile.infrastructure.cert_only_subdomains || [];
+  $('res-sub-title').textContent = 'Subdomains (' + (subs.length + certOnly.length) + ' total)';
+  let subHtml = subs.map(s =>
+    '<tr><td><code>' + esc(s.subdomain) + '</code></td><td>' + esc((s.A||[]).join(', ')) + '</td><td>'
+    + esc((s.CNAME||[]).join(', ')) + '</td><td>DNS Brute-force</td></tr>'
+  ).join('');
+  subHtml += certOnly.slice(0, 50).map(s =>
+    '<tr><td><code>' + esc(s) + '</code></td><td></td><td></td><td>Certificate Transparency</td></tr>'
+  ).join('');
+  $('res-subdomains').innerHTML = subHtml || '<tr><td colspan="4" class="empty">None discovered</td></tr>';
+
+  // People
+  const members = (profile.people || {}).github_members || [];
+  const peEmails = (profile.people || {}).email_candidates || [];
+  let peHtml = '';
+  if (members.length) {
+    peHtml += '<h3>GitHub Members (' + members.length + ')</h3><table><thead><tr><th>Username</th><th>Profile</th></tr></thead><tbody>'
+      + members.slice(0, 30).map(m => '<tr><td>' + esc(m.login||'') + '</td><td><a href="' + esc(m.html_url||'') + '" style="color:#4fc3f7" target="_blank">' + esc(m.html_url||'') + '</a></td></tr>').join('')
+      + '</tbody></table>';
+  }
+  if (peEmails.length) {
+    peHtml += '<h3>Email Addresses (' + peEmails.length + ')</h3><ul>' + peEmails.map(e => '<li><code>' + esc(e) + '</code></li>').join('') + '</ul>';
+  }
+  $('res-people').innerHTML = peHtml || '<p class="empty">No people data collected</p>';
+
+  // Breach
+  const bs = (profile.breach_exposure || {}).summary || {};
+  if (bs.total_emails_checked) {
+    let bHtml = '<table>';
+    ['total_emails_checked','breached_count','breach_rate_pct','risk_level','recommendation'].forEach(k => {
+      if (bs[k] !== undefined) bHtml += '<tr><th>' + esc(k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())) + '</th><td>' + esc(bs[k]) + '</td></tr>';
+    });
+    bHtml += '</table>';
+    if ((bs.all_data_classes||[]).length)
+      bHtml += '<h3>Data Classes Exposed</h3>' + bs.all_data_classes.map(c => '<span class="tag">' + esc(c) + '</span>').join('');
+    if ((bs.unique_breaches||[]).length)
+      bHtml += '<h3>Breaches</h3>' + bs.unique_breaches.map(b => '<span class="tag">' + esc(b) + '</span>').join('');
+    $('res-breach').innerHTML = bHtml;
+  } else {
+    $('res-breach').innerHTML = '<p class="empty">No breach data collected (HIBP API key required).</p>';
+  }
+
+  // Wayback
+  const snaps = (profile.historical || {}).wayback_snapshots || [];
+  $('res-wayback').innerHTML = snaps.length
+    ? snaps.slice(0, 15).map(s =>
+        '<tr><td>' + esc(s.timestamp||'') + '</td><td>' + esc(s.statuscode||'') + '</td><td><a href="' + esc(s.wayback_url||'') + '" style="color:#4fc3f7" target="_blank">' + esc(s.wayback_url||'') + '</a></td></tr>'
+      ).join('')
+    : '<tr><td colspan="3" class="empty">No snapshots collected</td></tr>';
+
+  // Relationships
+  const rels = profile.relationships || [];
+  $('res-relationships').innerHTML = rels.length
+    ? rels.slice(0, 50).map(r =>
+        '<tr><td><code>' + esc(r.from) + '</code></td><td>' + esc(r.type) + '</td><td><code>' + esc(r.to) + '</code></td></tr>'
+      ).join('')
+    : '<tr><td colspan="3" class="empty">No relationships mapped</td></tr>';
+}
+
+/* ------------------------------------------------------------------
+   Download / Navigation
+   ------------------------------------------------------------------ */
+function downloadReport(fmt) {
+  if (currentJobId) {
+    window.open('/api/scan/' + currentJobId + '/report/' + fmt, '_blank');
+  }
+}
+
+function backToConfig() {
+  showPanel('config');
+}
+</script>
+</body>
+</html>

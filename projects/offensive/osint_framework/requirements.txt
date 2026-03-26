@@ -21,3 +21,7 @@ requests==2.32.3
 
 # Optional: progress bars for long-running tasks
 # tqdm>=4.67.0
+
+# Web GUI (required for --gui option)
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0

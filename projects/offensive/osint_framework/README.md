@@ -76,6 +76,18 @@ python osint_framework.py -t example.com --dns \
   --dns-threads 50
 ```
 
+### Web GUI
+
+```bash
+# Launch the browser-based GUI on port 8080 (default)
+python osint_framework.py --gui
+
+# Use a custom port
+python osint_framework.py --gui --gui-port 9090
+```
+
+Open `http://localhost:8080` in your browser to configure targets, select modules, enter API keys, and run scans with real-time progress streaming.
+
 ---
 
 ## Output
@@ -154,6 +166,11 @@ modules/
   breach_check.py           ← HIBP, DeHashed breach queries
   search_recon.py           ← Shodan, crt.sh, Wayback Machine, dorks
   reporter.py               ← Profile aggregation and report generation
+gui/
+  __init__.py
+  app.py                    ← FastAPI web GUI backend (SSE, scan API)
+  templates/
+    index.html              ← Self-contained SPA frontend
 osint_reports/              ← Generated reports (created at runtime)
 ```
 
