@@ -623,8 +623,13 @@ def main():
         launch_gui(host="0.0.0.0", port=args.gui_port)
         return
 
-    # In CLI mode, --target is required
+    # When running as a frozen exe with no arguments, launch the GUI
     if not args.target:
+        if getattr(sys, "frozen", False) and len(sys.argv) == 1:
+            args.gui = True
+            from gui.app import launch_gui
+            launch_gui(host="0.0.0.0", port=args.gui_port)
+            return
         parser.error("the following arguments are required: -t/--target")
 
     prog   = Progress(quiet=args.quiet)
