@@ -212,8 +212,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
         epilog=__doc__,
     )
 
-    # Target
-    p.add_argument("-t", "--target", required=True, type=validate_target,
+    # Target (not required when --gui is used)
+    p.add_argument("-t", "--target", type=validate_target,
                    help="Target domain (e.g. example.com) or IP address")
     p.add_argument("--ip", metavar="IP", type=validate_ip,
                    help="Specific IP address to query (optional, auto-resolved if omitted)")
@@ -279,6 +279,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
                      default="all", help="Report format (default: all)")
     out.add_argument("--quiet", action="store_true", help="Suppress progress output")
     out.add_argument("--no-banner", action="store_true", help="Skip ASCII banner")
+
+    # GUI
+    gui = p.add_argument_group("Web GUI")
+    gui.add_argument("--gui", action="store_true",
+                     help="Launch web-based GUI instead of running a CLI scan")
+    gui.add_argument("--gui-port", metavar="PORT", type=int, default=8080,
+                     help="Port for the GUI web server (default: 8080)")
 
     # Logging
     log = p.add_argument_group("Logging")
@@ -609,6 +616,17 @@ def resolve_target_ips(target: str) -> list[str]:
 def main():
     parser = build_arg_parser()
     args   = parser.parse_args()
+
+    # Launch web GUI if requested (no target needed)
+    if args.gui:
+        from gui.app import launch_gui
+        launch_gui(host="0.0.0.0", port=args.gui_port)
+        return
+
+    # In CLI mode, --target is required
+    if not args.target:
+        parser.error("the following arguments are required: -t/--target")
+
     prog   = Progress(quiet=args.quiet)
 
     # Logging
