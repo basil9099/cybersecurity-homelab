@@ -1,0 +1,1 @@
+"""CTF flag management system."""

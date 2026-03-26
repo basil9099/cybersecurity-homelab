@@ -1,0 +1,253 @@
+{
+  "response_id": "RESP-C7B09FD5",
+  "playbook_name": "Brute Force Response",
+  "alert_id": "ALERT-4D7F590F",
+  "status": "success",
+  "started_at": "2026-03-25T20:24:48.689310",
+  "completed_at": "2026-03-25T20:24:53.653219",
+  "duration_seconds": 4.963909,
+  "generated_at": "2026-03-25T20:24:53.660411",
+  "alert": {
+    "id": "ALERT-4D7F590F",
+    "timestamp": "2026-03-25T20:24:48.687806",
+    "alert_type": "brute_force",
+    "severity": "high",
+    "source_ip": "203.0.113.42",
+    "dest_ip": "10.0.1.15",
+    "description": "Multiple failed SSH login attempts detected from external IP. Over 150 failed attempts in 5 minutes against root account on production server srv-web-01.",
+    "tags": [
+      "ssh",
+      "authentication",
+      "external_threat",
+      "brute_force"
+    ],
+    "raw_data": {
+      "failed_attempts": 153,
+      "time_window_minutes": 5,
+      "target_account": "root",
+      "target_host": "srv-web-01",
+      "service": "sshd",
+      "geo_location": "Unknown - TOR exit node"
+    }
+  },
+  "steps": [
+    {
+      "step_name": "Log incident initiation",
+      "action": "log_event",
+      "status": "success",
+      "started_at": "2026-03-25T20:24:48.690325",
+      "completed_at": "2026-03-25T20:24:49.279514",
+      "duration_seconds": 0.589189,
+      "output": "[2026-03-25T20:24:49.278613] [HIGH] Brute force attack detected - initiating automated response",
+      "error": "",
+      "nist_phase": "detection",
+      "evidence": {
+        "log_entry": "[2026-03-25T20:24:49.278613] [HIGH] Brute force attack detected - initiating automated response"
+      }
+    },
+    {
+      "step_name": "Block attacking IP address",
+      "action": "block_ip",
+      "status": "success",
+      "started_at": "2026-03-25T20:24:49.279554",
+      "completed_at": "2026-03-25T20:24:50.300855",
+      "duration_seconds": 1.021301,
+      "output": "[SIMULATED] Firewall rule added on iptables:\n  Action: DROP\n  Source: 203.0.113.42\n  Duration: 48h\n  Rule ID: FW-58580\n  Status: ACTIVE",
+      "error": "",
+      "nist_phase": "containment",
+      "evidence": {
+        "blocked_ip": "203.0.113.42",
+        "duration": "48h",
+        "firewall": "iptables"
+      }
+    },
+    {
+      "step_name": "Collect authentication logs",
+      "action": "collect_evidence",
+      "status": "success",
+      "started_at": "2026-03-25T20:24:50.300894",
+      "completed_at": "2026-03-25T20:24:51.485999",
+      "duration_seconds": 1.185105,
+      "output": "[SIMULATED] Evidence collection completed:\n  Type: auth_logs\n  Source: /var/log/auth.log\n  Files collected: 6\n  Total size: 64.2 MB\n  Integrity hash: sha256:3b0786c911855be252c62749fbc96849\n  Stored at: /evidence/brute_force\n  Chain of custody: INITIATED",
+      "error": "",
+      "nist_phase": "containment",
+      "evidence": {
+        "evidence_type": "auth_logs",
+        "source": "/var/log/auth.log",
+        "destination": "/evidence/brute_force",
+        "integrity_hash": "sha256:3b0786c911855be252c62749fbc96849"
+      }
+    },
+    {
+      "step_name": "Audit failed login attempts",
+      "action": "audit_logs",
+      "status": "success",
+      "started_at": "2026-03-25T20:24:51.486042",
+      "completed_at": "2026-03-25T20:24:52.545302",
+      "duration_seconds": 1.05926,
+      "output": "[SIMULATED] Log audit completed:\n  Source: auth.log\n  Timeframe: 6h\n  Entries analyzed: 3433\n  Anomalies flagged: 13\n  Report generated: /evidence/audit_7724.json",
+      "error": "",
+      "nist_phase": "detection",
+      "evidence": {
+        "log_source": "auth.log",
+        "anomalies": 13
+      }
+    },
+    {
+      "step_name": "Notify SOC team",
+      "action": "notify",
+      "status": "success",
+      "started_at": "2026-03-25T20:24:52.545344",
+      "completed_at": "2026-03-25T20:24:53.102409",
+      "duration_seconds": 0.557065,
+      "output": "[SIMULATED] Notification sent:\n  Method: email\n  Recipients: soc-team@org.local, security-alerts@org.local\n  Message: Brute force attack detected and contained. Review required.\n  Message ID: MSG-941385\n  Delivery status: SENT",
+      "error": "",
+      "nist_phase": "post_incident",
+      "evidence": {
+        "channel": "soc",
+        "method": "email",
+        "message_id": "MSG-941385"
+      }
+    },
+    {
+      "step_name": "Log incident completion",
+      "action": "log_event",
+      "status": "success",
+      "started_at": "2026-03-25T20:24:53.102440",
+      "completed_at": "2026-03-25T20:24:53.651970",
+      "duration_seconds": 0.54953,
+      "output": "[2026-03-25T20:24:53.651247] [INFO] Brute force response playbook completed",
+      "error": "",
+      "nist_phase": "post_incident",
+      "evidence": {
+        "log_entry": "[2026-03-25T20:24:53.651247] [INFO] Brute force response playbook completed"
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "timestamp": "2026-03-25T20:24:48.690325",
+      "event": "Step started: Log incident initiation",
+      "nist_phase": "detection",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:49.279514",
+      "event": "Step completed: Log incident initiation",
+      "nist_phase": "detection",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:49.279554",
+      "event": "Step started: Block attacking IP address",
+      "nist_phase": "containment",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:50.300855",
+      "event": "Step completed: Block attacking IP address",
+      "nist_phase": "containment",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:50.300894",
+      "event": "Step started: Collect authentication logs",
+      "nist_phase": "containment",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:51.485999",
+      "event": "Step completed: Collect authentication logs",
+      "nist_phase": "containment",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:51.486042",
+      "event": "Step started: Audit failed login attempts",
+      "nist_phase": "detection",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:52.545302",
+      "event": "Step completed: Audit failed login attempts",
+      "nist_phase": "detection",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:52.545344",
+      "event": "Step started: Notify SOC team",
+      "nist_phase": "post_incident",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:53.102409",
+      "event": "Step completed: Notify SOC team",
+      "nist_phase": "post_incident",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:53.102440",
+      "event": "Step started: Log incident completion",
+      "nist_phase": "post_incident",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-03-25T20:24:53.651970",
+      "event": "Step completed: Log incident completion",
+      "nist_phase": "post_incident",
+      "status": "success"
+    }
+  ],
+  "evidence": [
+    {
+      "step": "Log incident initiation",
+      "nist_phase": "detection",
+      "log_entry": "[2026-03-25T20:24:49.278613] [HIGH] Brute force attack detected - initiating automated response"
+    },
+    {
+      "step": "Block attacking IP address",
+      "nist_phase": "containment",
+      "blocked_ip": "203.0.113.42",
+      "duration": "48h",
+      "firewall": "iptables"
+    },
+    {
+      "step": "Collect authentication logs",
+      "nist_phase": "containment",
+      "evidence_type": "auth_logs",
+      "source": "/var/log/auth.log",
+      "destination": "/evidence/brute_force",
+      "integrity_hash": "sha256:3b0786c911855be252c62749fbc96849"
+    },
+    {
+      "step": "Audit failed login attempts",
+      "nist_phase": "detection",
+      "log_source": "auth.log",
+      "anomalies": 13
+    },
+    {
+      "step": "Notify SOC team",
+      "nist_phase": "post_incident",
+      "channel": "soc",
+      "method": "email",
+      "message_id": "MSG-941385"
+    },
+    {
+      "step": "Log incident completion",
+      "nist_phase": "post_incident",
+      "log_entry": "[2026-03-25T20:24:53.651247] [INFO] Brute force response playbook completed"
+    }
+  ],
+  "escalated": false,
+  "escalation_reason": "",
+  "nist_summary": {
+    "detection": 2,
+    "containment": 2,
+    "post_incident": 2
+  },
+  "summary": {
+    "total_steps": 6,
+    "successful": 6,
+    "failed": 0
+  }
+}

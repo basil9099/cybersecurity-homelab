@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Scoreboard{% endblock %}
+{% block content %}
+<h2>> CTF Scoreboard</h2>
+<p class="challenge-desc">
+    Track your progress. Capture all {{ total }} flags to complete the challenge.
+</p>
+
+<div class="card" style="text-align: center; padding: 2rem;">
+    <div style="font-size: 3rem; color: #00ff41; text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);">
+        {{ captured }} / {{ total }}
+    </div>
+    <div style="color: #666; margin-top: 0.5rem;">Flags Captured</div>
+    <div style="margin-top: 1rem; background: #0a0a0a; border-radius: 4px; height: 20px; overflow: hidden;">
+        <div style="background: linear-gradient(90deg, #00ff41, #00cc33); height: 100%; width: {{ (captured / total * 100) if total > 0 else 0 }}%; transition: width 0.5s;"></div>
+    </div>
+</div>
+
+<div class="card">
+    <table>
+        <tr>
+            <th>Challenge</th>
+            <th>Status</th>
+            <th>Captured At</th>
+        </tr>
+        {% for score in scores %}
+        <tr>
+            <td>{{ score.challenge }}</td>
+            <td>
+                {% if score.captured %}
+                <span style="color: #00ff41;">CAPTURED</span>
+                {% else %}
+                <span style="color: #ff0040;">PENDING</span>
+                {% endif %}
+            </td>
+            <td style="color: #555;">{{ score.captured_at or '-' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="card">
+    <h3>Submit a Flag</h3>
+    <form id="flag-form" onsubmit="submitFlag(event)">
+        <label for="challenge">Challenge:</label>
+        <select id="challenge" name="challenge">
+            {% for score in scores %}
+            <option value="{{ score.challenge }}">{{ score.challenge }}</option>
+            {% endfor %}
+        </select>
+        <label for="flag">Flag:</label>
+        <input type="text" id="flag" name="flag" placeholder="FLAG{...}" autocomplete="off">
+        <button type="submit">Submit Flag</button>
+    </form>
+    <div id="submit-result"></div>
+</div>
+
+<div style="margin-top: 1rem;">
+    <form method="POST" action="/flags/reset" style="display: inline;">
+        <button type="submit" class="btn-danger" onclick="return confirm('Reset all captured flags?');">
+            Reset All Flags
+        </button>
+    </form>
+</div>
+
+<script>
+async function submitFlag(e) {
+    e.preventDefault();
+    const challenge = document.getElementById('challenge').value;
+    const flag = document.getElementById('flag').value;
+    const resultDiv = document.getElementById('submit-result');
+
+    try {
+        const resp = await fetch('/flags/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({challenge, flag})
+        });
+        const data = await resp.json();
+        if (data.correct) {
+            resultDiv.innerHTML = '<div class="success">' + data.message + '</div>';
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            resultDiv.innerHTML = '<div class="error">' + data.message + '</div>';
+        }
+    } catch (err) {
+        resultDiv.innerHTML = '<div class="error">Error: ' + err.message + '</div>';
+    }
+}
+</script>
+{% endblock %}

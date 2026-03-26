@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}SQLi - Product Search{% endblock %}
+{% block content %}
+<h2>> SQL Injection: Product Search</h2>
+<p class="challenge-desc">
+    Search for products. The search parameter is vulnerable to UNION-based SQL injection.
+</p>
+
+<div class="card">
+    <form method="GET" action="/sqli/search">
+        <label for="q">Search Products:</label>
+        <input type="text" id="q" name="q" value="{{ query }}" placeholder="Search for a product..." autocomplete="off">
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+{% if results %}
+<div class="card">
+    <h3>Search Results ({{ results|length }} found)</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Category</th>
+        </tr>
+        {% for product in results %}
+        <tr>
+            <td>{{ product.get('id', '') }}</td>
+            <td>{{ product.get('name', '') }}</td>
+            <td>{{ product.get('description', '') }}</td>
+            <td>{{ product.get('price', '') }}</td>
+            <td>{{ product.get('category', '') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% elif query and not error %}
+<div class="card">
+    <p>No products found for "{{ query }}".</p>
+</div>
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> The products table has 6 columns. Try a UNION SELECT to extract data from other tables.
+</div>
+{% endblock %}

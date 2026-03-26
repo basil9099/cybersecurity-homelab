@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}CMD - Command Injection{% endblock %}
+{% block content %}
+<h2>> OS Command Injection: Ping Utility</h2>
+<p class="challenge-desc">
+    Enter a host to ping. The input is passed directly to the system shell without sanitization.
+</p>
+
+<div class="card">
+    <form method="POST" action="/cmd/ping">
+        <label for="target">Target Host:</label>
+        <input type="text" id="target" name="target" value="{{ target }}"
+               placeholder="e.g., 127.0.0.1" autocomplete="off">
+        <button type="submit">Ping</button>
+    </form>
+</div>
+
+{% if output %}
+<div class="card">
+    <h3>Command Output</h3>
+    <div class="output-box">{{ output }}</div>
+</div>
+{% endif %}
+
+{% if flag %}
+<div class="flag-box">{{ flag }}</div>
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> Shell metacharacters can chain additional commands.
+    Try: <code>127.0.0.1; whoami</code> or <code>127.0.0.1 && cat /etc/passwd</code>
+</div>
+{% endblock %}

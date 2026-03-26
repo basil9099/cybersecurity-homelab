@@ -1,0 +1,129 @@
+playbook:
+  name: "Data Exfiltration Response"
+  description: >
+    Response playbook for suspected data exfiltration events. Blocks the
+    destination IP, captures network traffic for analysis, preserves all
+    relevant logs, and escalates to management given the potential for
+    regulatory and legal implications.
+  nist_phase: "containment"
+  version: "1.5"
+  author: "AEGIS Security Team"
+  tags:
+    - data_loss
+    - exfiltration
+    - dlp
+    - network
+
+  trigger_conditions:
+    alert_types:
+      - data_exfiltration
+    min_severity: high
+    required_tags: []
+    any_tags:
+      - exfiltration
+      - dlp
+      - data_loss
+      - anomalous_transfer
+      - network
+
+  steps:
+    - name: "Log exfiltration detection"
+      action: log_event
+      parameters:
+        message: "Potential data exfiltration detected - initiating containment and evidence preservation"
+        severity: critical
+      timeout: 30
+      nist_phase: detection
+      continue_on_failure: true
+
+    - name: "Block destination IP"
+      action: block_ip
+      parameters:
+        duration: "indefinite"
+        firewall: "pfsense"
+        comment: "Auto-blocked: suspected exfiltration destination"
+      timeout: 60
+      rollback_action: log_event
+      rollback_parameters:
+        message: "Failed to block exfiltration destination - URGENT manual action required"
+        severity: critical
+      nist_phase: containment
+
+    - name: "Capture network traffic"
+      action: capture_traffic
+      parameters:
+        interface: "eth0"
+        duration: "600s"
+        filter: "host {dest_ip}"
+      timeout: 660
+      nist_phase: containment
+      continue_on_failure: true
+
+    - name: "Preserve firewall logs"
+      action: preserve_logs
+      parameters:
+        sources:
+          - "firewall"
+          - "proxy"
+          - "netflow"
+        destination: "/evidence/exfiltration/network_logs"
+      timeout: 180
+      nist_phase: containment
+
+    - name: "Preserve application and system logs"
+      action: preserve_logs
+      parameters:
+        sources:
+          - "syslog"
+          - "application"
+          - "database_audit"
+        destination: "/evidence/exfiltration/system_logs"
+      timeout: 180
+      nist_phase: containment
+      continue_on_failure: true
+
+    - name: "Collect DLP alert details"
+      action: collect_evidence
+      parameters:
+        type: "dlp_alerts"
+        source: "dlp_system"
+        destination: "/evidence/exfiltration/dlp_data"
+      timeout: 120
+      nist_phase: containment
+      continue_on_failure: true
+
+    - name: "Notify SOC and legal team"
+      action: notify
+      parameters:
+        channel: "soc"
+        method: "email"
+        recipients:
+          - "soc-team@org.local"
+          - "legal@org.local"
+          - "compliance@org.local"
+        message: "Data exfiltration incident detected. Evidence preserved. Legal review may be required."
+      timeout: 30
+      nist_phase: post_incident
+
+    - name: "Escalate to management"
+      action: escalate
+      parameters:
+        level: "management"
+        reason: "Suspected data exfiltration with potential regulatory implications"
+        contacts:
+          - "ciso@org.local"
+          - "dpo@org.local"
+          - "legal-counsel@org.local"
+      timeout: 30
+      nist_phase: post_incident
+
+  escalation_policy:
+    notify_on_failure: true
+    escalation_contacts:
+      - "ciso@org.local"
+      - "legal@org.local"
+      - "dpo@org.local"
+    escalation_threshold: 1
+    auto_escalate_severity:
+      - high
+      - critical

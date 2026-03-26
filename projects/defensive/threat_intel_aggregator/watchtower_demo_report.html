@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WATCHTOWER - Threat Intelligence Report</title>
+<style>
+  :root {
+    --bg: #0d1117; --fg: #c9d1d9; --accent: #58a6ff;
+    --red: #f85149; --orange: #d29922; --green: #3fb950;
+    --card-bg: #161b22; --border: #30363d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: -apple-system, 'Segoe UI', sans-serif; padding: 2rem; }
+  h1 { color: var(--accent); font-size: 2rem; margin-bottom: .5rem; }
+  h2 { color: var(--accent); font-size: 1.3rem; margin: 2rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: .4rem; }
+  .meta { color: #8b949e; font-size: .85rem; margin-bottom: 2rem; }
+  .cards { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; min-width: 160px; flex: 1; }
+  .card .label { font-size: .8rem; color: #8b949e; text-transform: uppercase; }
+  .card .value { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 8px; overflow: hidden; margin-bottom: 1rem; }
+  th { background: #21262d; text-align: left; padding: .6rem .8rem; font-size: .8rem; text-transform: uppercase; color: #8b949e; }
+  td { padding: .5rem .8rem; border-top: 1px solid var(--border); font-size: .85rem; }
+  tr:hover td { background: #1c2128; }
+  .sev-critical { color: var(--red); font-weight: bold; }
+  .sev-high { color: #f0883e; }
+  .sev-medium { color: var(--orange); }
+  .sev-low { color: var(--green); }
+  .sev-informational { color: #8b949e; }
+  .status-online { color: var(--green); }
+  .status-offline { color: var(--red); }
+  .disclaimer { margin-top: 3rem; padding: 1rem; border: 1px solid var(--border); border-radius: 8px; font-size: .8rem; color: #8b949e; }
+</style>
+</head>
+<body>
+<h1>WATCHTOWER Threat Intelligence Report</h1>
+<p class="meta">Generated: 2026-03-25 20:26:14 UTC</p>
+
+<h2>Executive Summary</h2>
+<div class="cards">
+  <div class="card"><div class="label">Total IOCs</div><div class="value">23</div></div>
+  <div class="card"><div class="label">Avg Confidence</div><div class="value">0.69</div></div>
+  <div class="card"><div class="label">Correlation Hits</div><div class="value">4</div></div>
+  <div class="card"><div class="label">Actionable Alerts</div><div class="value" style="color:var(--red)">4</div></div>
+</div>
+
+<h2>IOC Inventory</h2>
+<table><thead><tr><th>IOC</th><th>Type</th><th>Source</th><th>Confidence</th><th>Severity</th><th>Tags</th></tr></thead><tbody><tr><td>198.51.100.23</td><td>ip</td><td>abuseipdb</td><td>0.95</td><td class='sev-critical'>CRITICAL</td><td>brute_force, ssh_brute_force, hacking</td></tr>
+<tr><td>203.0.113.42</td><td>ip</td><td>abuseipdb</td><td>0.88</td><td class='sev-critical'>CRITICAL</td><td>port_scan, hacking, web_app_attack</td></tr>
+<tr><td>198.51.100.77</td><td>ip</td><td>abuseipdb</td><td>0.82</td><td class='sev-critical'>CRITICAL</td><td>ddos_attack, hacking</td></tr>
+<tr><td>http://198.51.100.77/loader.sh</td><td>url</td><td>urlhaus</td><td>0.80</td><td class='sev-critical'>CRITICAL</td><td>cryptominer, shell, malware_download</td></tr>
+<tr><td>http://malware-c2.evil.xyz/gate.php</td><td>url</td><td>urlhaus</td><td>0.80</td><td class='sev-critical'>CRITICAL</td><td>trojan, c2, malware_download</td></tr>
+<tr><td>https://phish-login.badactor.top/wp-login.php</td><td>url</td><td>urlhaus</td><td>0.80</td><td class='sev-critical'>CRITICAL</td><td>phishing, wordpress</td></tr>
+<tr><td>http://198.51.100.23:8080/bins/mirai.arm7</td><td>url</td><td>urlhaus</td><td>0.80</td><td class='sev-critical'>CRITICAL</td><td>mirai, elf, arm, malware_download</td></tr>
+<tr><td>203.0.113.99</td><td>ip</td><td>abuseipdb</td><td>0.76</td><td class='sev-high'>HIGH</td><td>phishing, web_app_attack</td></tr>
+<tr><td>192.0.2.15</td><td>ip</td><td>abuseipdb</td><td>0.70</td><td class='sev-high'>HIGH</td><td>open_proxy, bad_web_bot</td></tr>
+<tr><td>203.0.113.201</td><td>ip</td><td>emerging_threats</td><td>0.65</td><td class='sev-high'>HIGH</td><td>compromised, blocklist</td></tr>
+<tr><td>198.51.100.130</td><td>ip</td><td>emerging_threats</td><td>0.65</td><td class='sev-high'>HIGH</td><td>compromised, blocklist</td></tr>
+<tr><td>192.0.2.88</td><td>ip</td><td>emerging_threats</td><td>0.65</td><td class='sev-high'>HIGH</td><td>compromised, blocklist</td></tr>
+<tr><td>203.0.113.10</td><td>ip</td><td>emerging_threats</td><td>0.65</td><td class='sev-high'>HIGH</td><td>compromised, blocklist</td></tr>
+<tr><td>198.51.100.55</td><td>ip</td><td>emerging_threats</td><td>0.65</td><td class='sev-high'>HIGH</td><td>compromised, blocklist</td></tr>
+<tr><td>203.0.113.150</td><td>ip</td><td>emerging_threats</td><td>0.65</td><td class='sev-high'>HIGH</td><td>compromised, blocklist</td></tr>
+<tr><td>198.51.100.200</td><td>ip</td><td>abuseipdb</td><td>0.65</td><td class='sev-high'>HIGH</td><td>ssh_brute_force</td></tr>
+<tr><td>a94a8fe5ccb19ba61c4c0873d391e987982fbbd3</td><td>hash_sha1</td><td>alienvault_otx</td><td>0.60</td><td class='sev-high'>HIGH</td><td>ransomware, dropper, malware</td></tr>
+<tr><td>ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad</td><td>hash_sha256</td><td>alienvault_otx</td><td>0.60</td><td class='sev-high'>HIGH</td><td>ransomware, dropper, malware</td></tr>
+<tr><td>dropper.darknet.ru</td><td>domain</td><td>alienvault_otx</td><td>0.60</td><td class='sev-high'>HIGH</td><td>ransomware, dropper, malware</td></tr>
+<tr><td>phish-login.badactor.top</td><td>domain</td><td>alienvault_otx</td><td>0.60</td><td class='sev-high'>HIGH</td><td>phishing, credential-theft, social-engineering</td></tr>
+<tr><td>e99a18c428cb38d5f260853678922e03</td><td>hash_md5</td><td>alienvault_otx</td><td>0.60</td><td class='sev-high'>HIGH</td><td>mirai, botnet, iot, c2</td></tr>
+<tr><td>malware-c2.evil.xyz</td><td>domain</td><td>alienvault_otx</td><td>0.60</td><td class='sev-high'>HIGH</td><td>mirai, botnet, iot, c2</td></tr>
+<tr><td>http://203.0.113.42:443/payload.exe</td><td>url</td><td>urlhaus</td><td>0.50</td><td class='sev-medium'>MEDIUM</td><td>ransomware, exe, malware_download</td></tr>
+</tbody></table>
+
+<h2>Correlation Results</h2>
+<table><thead><tr><th>#</th><th>Score</th><th>Severity</th><th>Matched IOCs</th><th>Actions</th><th>Event</th></tr></thead><tbody><tr><td>1</td><td>66</td><td class='sev-high'>HIGH</td><td>ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad, http://198.51.100.77/loader.sh</td><td>escalate</td><td>Malicious payload downloaded</td></tr>
+<tr><td>2</td><td>57</td><td class='sev-medium'>MEDIUM</td><td>https://phish-login.badactor.top/wp-login.php</td><td>investigate</td><td>Credential phishing redirect detected</td></tr>
+<tr><td>3</td><td>45</td><td class='sev-medium'>MEDIUM</td><td>malware-c2.evil.xyz</td><td>investigate</td><td>DNS resolution for known C2 domain</td></tr>
+<tr><td>4</td><td>45</td><td class='sev-medium'>MEDIUM</td><td>dropper.darknet.ru</td><td>investigate</td><td>DNS query for known dropper domain</td></tr>
+</tbody></table>
+
+<h2>Feed Health</h2>
+<table><thead><tr><th>Feed</th><th>Status</th><th>Last Fetch</th><th>Indicators</th><th>Latency</th><th>Error</th></tr></thead><tbody><tr><td>abuseipdb</td><td class='status-online'>ONLINE</td><td>20:26:14</td><td>7</td><td>42 ms</td><td>-</td></tr>
+<tr><td>alienvault_otx</td><td class='status-online'>ONLINE</td><td>20:26:14</td><td>11</td><td>85 ms</td><td>-</td></tr>
+<tr><td>urlhaus</td><td class='status-online'>ONLINE</td><td>20:26:14</td><td>5</td><td>55 ms</td><td>-</td></tr>
+<tr><td>emerging_threats</td><td class='status-online'>ONLINE</td><td>20:26:14</td><td>12</td><td>120 ms</td><td>-</td></tr>
+</tbody></table>
+
+<div class="disclaimer">
+<strong>Disclaimer:</strong> This report is generated for defensive security
+purposes within an authorized homelab environment. All indicators of
+compromise are sourced from publicly available threat intelligence feeds.
+Do not use this data for offensive operations.
+</div>
+</body>
+</html>

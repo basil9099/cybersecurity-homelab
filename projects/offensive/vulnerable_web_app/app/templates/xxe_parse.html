@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}XXE - XML Parser{% endblock %}
+{% block content %}
+<h2>> XML External Entity: XML Parser</h2>
+<p class="challenge-desc">
+    Submit XML data for parsing. The parser processes external entity declarations without restriction.
+</p>
+
+<div class="card">
+    <form method="POST" action="/xxe/parse">
+        <label for="xml_content">XML Input:</label>
+        <textarea id="xml_content" name="xml_content" rows="10">{{ sample_xml }}</textarea>
+        <button type="submit">Parse XML</button>
+    </form>
+</div>
+
+{% if result %}
+    {% if result.success %}
+    <div class="card">
+        <h3>Parsed XML Data</h3>
+        <table>
+            <tr><th>Element</th><th>Value</th></tr>
+            {% for key, value in result.parsed.items() %}
+            <tr>
+                <td>{{ key }}</td>
+                <td><div class="output-box" style="margin: 0; max-height: 200px;">{{ value }}</div></td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% if result.raw_xml %}
+        <h3 style="margin-top: 1rem;">Processed XML</h3>
+        <pre>{{ result.raw_xml }}</pre>
+        {% endif %}
+    </div>
+
+        {% if result.flag %}
+        <div class="flag-box">{{ result.flag }}</div>
+        {% endif %}
+    {% else %}
+    <div class="error">{{ result.error }}</div>
+    {% endif %}
+{% endif %}
+
+<div class="hint-box">
+    <strong>Hint:</strong> Define an external entity in a DOCTYPE declaration to read local files:
+    <pre style="margin-top: 0.5rem; background: transparent; border: none; color: #8888ff;">
+&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE foo [
+  &lt;!ENTITY xxe SYSTEM "file:///etc/passwd"&gt;
+]&gt;
+&lt;user&gt;&lt;name&gt;&amp;xxe;&lt;/name&gt;&lt;/user&gt;</pre>
+</div>
+{% endblock %}

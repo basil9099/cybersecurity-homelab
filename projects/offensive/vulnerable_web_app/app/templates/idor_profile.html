@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}IDOR - User Profile{% endblock %}
+{% block content %}
+<h2>> Insecure Direct Object Reference: User Profile</h2>
+<p class="challenge-desc">
+    Viewing user profile. Try changing the ID in the URL to access other users' data.
+</p>
+
+{% if profile %}
+<div class="card">
+    <table>
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td>ID</td><td>{{ profile.id }}</td></tr>
+        <tr><td>Username</td><td>{{ profile.username }}</td></tr>
+        <tr><td>Email</td><td>{{ profile.email }}</td></tr>
+        <tr><td>Role</td><td>{{ profile.role }}</td></tr>
+        <tr><td>Secret Note</td><td>{{ profile.secret_note }}</td></tr>
+    </table>
+</div>
+
+{% if "FLAG{" in profile.secret_note %}
+<div class="flag-box">{{ profile.secret_note }}</div>
+{% endif %}
+
+{% else %}
+<div class="error">User with ID {{ user_id }} not found.</div>
+{% endif %}
+
+<div class="card">
+    <h3>Browse Profiles</h3>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        {% for i in range(1, 7) %}
+        <a href="/idor/profile/{{ i }}" class="btn {% if i == user_id %}btn-danger{% endif %}">
+            User #{{ i }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="hint-box">
+    <strong>Hint:</strong> There is no authorization check. Any user can view any profile by changing the ID.
+    Try: <code>/idor/profile/4</code>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h2>> Challenge Dashboard</h2>
+<p class="challenge-desc">
+    Welcome to BREACH. Select a challenge below to begin your security training.
+    Each challenge maps to a real-world OWASP Top 10 vulnerability category.
+    Find the hidden flags to prove exploitation.
+</p>
+
+<div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+    <a href="/flags/scoreboard" class="btn">View Scoreboard</a>
+    <a href="/docs" class="btn" target="_blank">API Documentation</a>
+</div>
+
+{% for challenge in challenges %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <h3 style="margin-bottom: 0;">{{ challenge.name }}</h3>
+        <span class="tag {% if challenge.difficulty == 'Easy' %}tag-easy{% elif challenge.difficulty == 'Medium' %}tag-medium{% else %}tag-hard{% endif %}">
+            {{ challenge.difficulty }}
+        </span>
+    </div>
+    <div style="color: #555; font-size: 0.8rem; margin-bottom: 0.5rem;">
+        {{ challenge.category }}
+    </div>
+    <p class="challenge-desc">{{ challenge.description }}</p>
+    <div style="margin-bottom: 0.8rem;">
+        <span style="color: #555; font-size: 0.8rem;">Endpoints: </span>
+        {% for endpoint in challenge.endpoints %}
+        <code>{{ endpoint }}</code>{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    </div>
+    <a href="{{ challenge.link }}" class="btn">Launch Challenge</a>
+</div>
+{% endfor %}
+{% endblock %}
