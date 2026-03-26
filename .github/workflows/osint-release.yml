@@ -1,0 +1,63 @@
+name: OSINT Framework — Windows Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag for labelling (e.g. v1.0.0)"
+        required: false
+
+defaults:
+  run:
+    working-directory: projects/offensive/osint_framework
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Windows executable
+        run: pyinstaller osint_framework.spec
+
+      - name: Verify executable exists
+        run: |
+          if (!(Test-Path "dist/osint_framework.exe")) { throw "Build failed — exe not found" }
+          $size = (Get-Item "dist/osint_framework.exe").Length / 1MB
+          Write-Host "Built osint_framework.exe ($([math]::Round($size, 1)) MB)"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: osint_framework-windows
+          path: projects/offensive/osint_framework/dist/osint_framework.exe
+
+  release:
+    needs: build-windows
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: osint_framework-windows
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: osint_framework.exe
+          generate_release_notes: true

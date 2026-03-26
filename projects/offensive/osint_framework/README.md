@@ -39,6 +39,32 @@ python osint_framework.py --help
 
 ---
 
+## Windows Executable (Standalone)
+
+A pre-built Windows `.exe` is available on the [GitHub Releases](../../releases) page — no Python installation required.
+
+### Download & run
+
+```powershell
+# Download the latest release, then:
+osint_framework.exe -t example.com --all
+
+# Launch the web GUI
+osint_framework.exe --gui
+```
+
+### Build from source
+
+```bash
+pip install -r requirements.txt pyinstaller
+python build_windows.py          # output: dist/osint_framework.exe
+python build_windows.py --clean  # clean build artifacts first
+```
+
+> **Antivirus note:** PyInstaller executables are occasionally flagged as false positives by antivirus software. Verify the file against the SHA256 hash published in the GitHub Release notes.
+
+---
+
 ## Quick Start
 
 ### Free sources only (no API keys needed)
@@ -171,6 +197,8 @@ gui/
   app.py                    ← FastAPI web GUI backend (SSE, scan API)
   templates/
     index.html              ← Self-contained SPA frontend
+osint_framework.spec        ← PyInstaller build specification
+build_windows.py            ← Local build helper for Windows exe
 osint_reports/              ← Generated reports (created at runtime)
 ```
 

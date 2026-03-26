@@ -23,7 +23,10 @@ from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from pydantic import BaseModel, field_validator
 
 # Ensure project root is importable
-_PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
+if getattr(sys, 'frozen', False):
+    _PROJECT_ROOT = sys._MEIPASS  # PyInstaller one-file extraction directory
+else:
+    _PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
@@ -50,7 +53,10 @@ from modules import reporter  # noqa: E402
 
 app = FastAPI(title="OSINT Framework GUI", version="1.0.0")
 
-TEMPLATE_DIR = Path(__file__).parent / "templates"
+if getattr(sys, 'frozen', False):
+    TEMPLATE_DIR = Path(sys._MEIPASS) / "gui" / "templates"
+else:
+    TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 # In-memory job store  (sufficient for single-user / local usage)
 _jobs: dict[str, dict[str, Any]] = {}

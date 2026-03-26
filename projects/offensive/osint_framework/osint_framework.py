@@ -40,7 +40,11 @@ import time
 from typing import Any
 
 # Ensure the project root is on the path for module imports
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+if getattr(sys, 'frozen', False):
+    _BASE_DIR = sys._MEIPASS  # PyInstaller one-file extraction directory
+else:
+    _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _BASE_DIR)
 
 from modules import (
     whois_recon,
