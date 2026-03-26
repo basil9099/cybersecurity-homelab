@@ -777,4 +777,18 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    _frozen = getattr(sys, "frozen", False)
+    try:
+        main()
+    except SystemExit as exc:
+        if _frozen:
+            input("\nPress Enter to exit...")
+        raise
+    except Exception as exc:
+        print(f"\n[!] Unexpected error: {exc}", file=sys.stderr)
+        if _frozen:
+            input("\nPress Enter to exit...")
+        sys.exit(1)
+    else:
+        if _frozen:
+            input("\nPress Enter to exit...")
