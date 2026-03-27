@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Path Traversal - File List{% endblock %}
+{% block content %}
+<h2>> Path Traversal: Available Files</h2>
+<p class="challenge-desc">
+    Files in the sandbox directory. Can you read files outside of it?
+</p>
+
+<div class="card">
+    <h3>Available Files</h3>
+    <ul>
+        {% for f in files %}
+        <li><a href="/files/read?filename={{ f }}">{{ f }}</a></li>
+        {% endfor %}
+    </ul>
+    {% if not files %}
+    <p style="color: #555;">No files found in sandbox.</p>
+    {% endif %}
+</div>
+
+<div class="hint-box">
+    <strong>Hint:</strong> Are there files outside this directory you could read?
+    Try: <code>../../../etc/passwd</code>
+</div>
+{% endblock %}
