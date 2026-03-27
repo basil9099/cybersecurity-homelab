@@ -77,11 +77,7 @@ async def path_traversal_list(request: Request) -> HTMLResponse:
     sandbox = Path(settings.FILES_DIR)
     files = [f.name for f in sandbox.iterdir() if f.is_file()] if sandbox.exists() else []
 
-    html_content = f"""
-    <h3>Available Files</h3>
-    <ul>
-    {"".join(f'<li><a href="/files/read?filename={f}">{f}</a></li>' for f in files)}
-    </ul>
-    <p class="hint-box">Hint: Are there files outside this directory you could read?</p>
-    """
-    return HTMLResponse(html_content)
+    return templates.TemplateResponse(
+        "path_traversal_list.html",
+        {"request": request, "files": files},
+    )

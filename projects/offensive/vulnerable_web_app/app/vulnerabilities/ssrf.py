@@ -87,7 +87,11 @@ async def ssrf_fetch(
     )
 
 
-@router.get("/internal/secret")
+# Internal endpoint router - mounted without prefix in main.py so it lives at /internal/secret
+internal_router = APIRouter()
+
+
+@internal_router.get("/internal/secret")
 async def internal_secret() -> JSONResponse:
     """Simulated internal service - should not be directly accessible."""
     return JSONResponse({

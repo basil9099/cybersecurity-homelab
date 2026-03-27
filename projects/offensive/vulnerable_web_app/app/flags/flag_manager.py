@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
@@ -131,11 +131,11 @@ async def list_challenges() -> JSONResponse:
 
 
 @router.post("/reset")
-async def reset_flags() -> JSONResponse:
-    """Reset all captured flags."""
+async def reset_flags() -> RedirectResponse:
+    """Reset all captured flags and redirect back to scoreboard."""
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("UPDATE flags SET captured = 0, captured_at = NULL")
     conn.commit()
     conn.close()
-    return JSONResponse({"message": "All flags have been reset."})
+    return RedirectResponse(url="/flags/scoreboard", status_code=303)

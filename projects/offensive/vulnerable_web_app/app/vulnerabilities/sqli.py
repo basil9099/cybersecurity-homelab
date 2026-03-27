@@ -25,32 +25,6 @@ templates = Jinja2Templates(
 @router.get("/login", response_class=HTMLResponse)
 async def sqli_login_page(request: Request) -> HTMLResponse:
     """Render the SQL injection login page."""
-    html = """
-    {% extends "base.html" %}
-    {% block title %}SQLi - Login Bypass{% endblock %}
-    {% block content %}
-    <h2>SQL Injection: Login Bypass</h2>
-    <p class="challenge-desc">Bypass the login form using SQL injection.
-    Default test account: <code>guest / guest</code></p>
-    <div class="card">
-        <form method="POST" action="/sqli/login">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter username">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter password">
-            <button type="submit">Login</button>
-        </form>
-    </div>
-    <div class="hint-box">
-        <strong>Hint:</strong> What happens if the username field contains a single quote?
-    </div>
-    {% endblock %}
-    """
-    from jinja2 import Environment, BaseLoader
-
-    env = Environment(loader=BaseLoader())
-    env.globals["request"] = request
-    # Use the real templates directory for base.html
     return templates.TemplateResponse(
         "sqli_login.html", {"request": request, "result": None}
     )

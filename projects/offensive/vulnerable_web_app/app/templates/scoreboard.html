@@ -77,14 +77,21 @@ async function submitFlag(e) {
             body: JSON.stringify({challenge, flag})
         });
         const data = await resp.json();
+        const msgDiv = document.createElement('div');
+        msgDiv.textContent = data.message;
         if (data.correct) {
-            resultDiv.innerHTML = '<div class="success">' + data.message + '</div>';
+            msgDiv.className = 'success';
+            resultDiv.replaceChildren(msgDiv);
             setTimeout(() => location.reload(), 1500);
         } else {
-            resultDiv.innerHTML = '<div class="error">' + data.message + '</div>';
+            msgDiv.className = 'error';
+            resultDiv.replaceChildren(msgDiv);
         }
     } catch (err) {
-        resultDiv.innerHTML = '<div class="error">Error: ' + err.message + '</div>';
+        const errDiv = document.createElement('div');
+        errDiv.className = 'error';
+        errDiv.textContent = 'Error: ' + err.message;
+        resultDiv.replaceChildren(errDiv);
     }
 }
 </script>
