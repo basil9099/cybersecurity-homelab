@@ -89,7 +89,7 @@ def _make_ip(rng: random.Random, index: int) -> str:
     return f"{a}.{b}.{c}.{d}"
 
 
-def generate_threats(count: int = 200, seed: int = 42) -> list[dict]:
+def generate_mock_threats(count: int = 200, seed: int = 42) -> list[dict]:
     """Return *count* threat-event dicts ready for the threat_events table."""
     rng = random.Random(seed)
     now = datetime.now(timezone.utc)
