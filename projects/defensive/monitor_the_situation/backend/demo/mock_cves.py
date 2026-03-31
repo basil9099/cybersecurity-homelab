@@ -82,7 +82,7 @@ _CVSS_VECTORS = {
 }
 
 
-def generate_cves(count: int = 50, seed: int = 42) -> list[dict]:
+def generate_mock_cves(count: int = 50, seed: int = 42) -> list[dict]:
     """Return *count* CVE dicts ready for DB insertion into the cves table."""
     rng = random.Random(seed)
     now = datetime.now(timezone.utc)
@@ -158,3 +158,8 @@ def generate_cves(count: int = 50, seed: int = 42) -> list[dict]:
     # Sort by published date descending (newest first)
     records.sort(key=lambda r: r["published_date"], reverse=True)
     return records
+
+
+def get_mock_cve_ids(count: int = 50, seed: int = 42) -> list[str]:
+    """Return just the CVE ID strings from the mock data."""
+    return [r["cve_id"] for r in generate_mock_cves(count, seed)]
