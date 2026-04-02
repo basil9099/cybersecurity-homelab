@@ -28,12 +28,14 @@ async def idor_profile(request: Request, user_id: int) -> HTMLResponse:
         /idor/profile/4  -> jane's profile with flag
     """
     conn = get_db()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
 
-    # VULN: No authorization check - any user can view any profile
-    cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
-    user = cursor.fetchone()
-    conn.close()
+        # VULN: No authorization check - any user can view any profile
+        cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+        user = cursor.fetchone()
+    finally:
+        conn.close()
 
     if user:
         profile = {
@@ -56,10 +58,12 @@ async def idor_profile(request: Request, user_id: int) -> HTMLResponse:
 async def idor_list_profiles() -> JSONResponse:
     """VULNERABLE: Endpoint leaks user count for enumeration."""
     conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) as total FROM users")
-    count = cursor.fetchone()["total"]
-    conn.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) as total FROM users")
+        count = cursor.fetchone()["total"]
+    finally:
+        conn.close()
 
     return JSONResponse({
         "total_users": count,

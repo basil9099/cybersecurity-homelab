@@ -40,10 +40,12 @@ async def xss_search(request: Request, q: str = "") -> HTMLResponse:
 async def xss_guestbook_page(request: Request) -> HTMLResponse:
     """Render the guestbook page with all stored entries."""
     conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM messages ORDER BY created_at DESC")
-    messages = [dict(row) for row in cursor.fetchall()]
-    conn.close()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM messages ORDER BY created_at DESC")
+        messages = [dict(row) for row in cursor.fetchall()]
+    finally:
+        conn.close()
 
     return templates.TemplateResponse(
         "xss_guestbook.html",
@@ -65,27 +67,29 @@ async def xss_guestbook_post(
         content: <script>alert(document.cookie)</script>
     """
     conn = get_db()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
 
-    # VULN: Storing user input without sanitization
-    cursor.execute(
-        "INSERT INTO messages (author, content) VALUES (?, ?)",
-        (author, content),
-    )
-    conn.commit()
+        # VULN: Storing user input without sanitization
+        cursor.execute(
+            "INSERT INTO messages (author, content) VALUES (?, ?)",
+            (author, content),
+        )
+        conn.commit()
 
-    # Check if XSS payload was submitted
-    flag_found = "<script>" in content.lower() or "onerror" in content.lower()
-    result = None
-    if flag_found:
-        result = {
-            "success": True,
-            "message": "XSS payload stored! FLAG{xss_stored_in_guestbook}",
-        }
+        # Check if XSS payload was submitted
+        flag_found = "<script>" in content.lower() or "onerror" in content.lower()
+        result = None
+        if flag_found:
+            result = {
+                "success": True,
+                "message": "XSS payload stored! FLAG{xss_stored_in_guestbook}",
+            }
 
-    cursor.execute("SELECT * FROM messages ORDER BY created_at DESC")
-    messages = [dict(row) for row in cursor.fetchall()]
-    conn.close()
+        cursor.execute("SELECT * FROM messages ORDER BY created_at DESC")
+        messages = [dict(row) for row in cursor.fetchall()]
+    finally:
+        conn.close()
 
     return templates.TemplateResponse(
         "xss_guestbook.html",

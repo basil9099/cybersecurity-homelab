@@ -43,12 +43,12 @@ def decode_jwt_token(token: str) -> dict | None:
         parts = token.split(".")
         if len(parts) >= 2:
             # Decode header to check algorithm
-            header_padded = parts[0] + "=" * (4 - len(parts[0]) % 4)
+            header_padded = parts[0] + "=" * (-len(parts[0]) % 4)
             header = json.loads(base64.urlsafe_b64decode(header_padded))
 
             if header.get("alg", "").lower() == "none":
                 # VULN: Accept tokens with alg:none without signature verification
-                payload_padded = parts[1] + "=" * (4 - len(parts[1]) % 4)
+                payload_padded = parts[1] + "=" * (-len(parts[1]) % 4)
                 payload = json.loads(base64.urlsafe_b64decode(payload_padded))
                 return payload
 
@@ -80,15 +80,17 @@ async def auth_login(
       - test / test
     """
     conn = get_db()
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
 
-    # VULN: No rate limiting, no account lockout
-    cursor.execute(
-        "SELECT * FROM users WHERE username = ? AND password = ?",
-        (username, password),
-    )
-    user = cursor.fetchone()
-    conn.close()
+        # VULN: No rate limiting, no account lockout
+        cursor.execute(
+            "SELECT * FROM users WHERE username = ? AND password = ?",
+            (username, password),
+        )
+        user = cursor.fetchone()
+    finally:
+        conn.close()
 
     if user:
         token = create_jwt_token({

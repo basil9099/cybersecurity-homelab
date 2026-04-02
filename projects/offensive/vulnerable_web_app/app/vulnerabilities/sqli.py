@@ -44,41 +44,42 @@ async def sqli_login(
         password: anything
     """
     conn = get_db()
-    cursor = conn.cursor()
-
-    # VULN: String concatenation in SQL query - classic SQL injection
-    query = (
-        f"SELECT * FROM users WHERE username = '{username}' "
-        f"AND password = '{password}'"
-    )
-
     try:
-        cursor.execute(query)
-        user = cursor.fetchone()
-        conn.close()
+        cursor = conn.cursor()
 
-        if user:
-            result = {
-                "success": True,
-                "message": f"Welcome back, {user['username']}!",
-                "role": user["role"],
-                "secret_note": user["secret_note"],
-                "flag": "FLAG{sql_injection_login_bypassed}"
-                if user["role"] == "admin"
-                else None,
-            }
-        else:
+        # VULN: String concatenation in SQL query - classic SQL injection
+        query = (
+            f"SELECT * FROM users WHERE username = '{username}' "
+            f"AND password = '{password}'"
+        )
+
+        try:
+            cursor.execute(query)
+            user = cursor.fetchone()
+
+            if user:
+                result = {
+                    "success": True,
+                    "message": f"Welcome back, {user['username']}!",
+                    "role": user["role"],
+                    "secret_note": user["secret_note"],
+                    "flag": "FLAG{sql_injection_login_bypassed}"
+                    if user["role"] == "admin"
+                    else None,
+                }
+            else:
+                result = {
+                    "success": False,
+                    "message": "Invalid username or password.",
+                }
+        except sqlite3.OperationalError as e:
+            # VULN: Detailed error messages leak information
             result = {
                 "success": False,
-                "message": "Invalid username or password.",
+                "message": f"SQL Error: {e}",
             }
-    except sqlite3.OperationalError as e:
+    finally:
         conn.close()
-        # VULN: Detailed error messages leak information
-        result = {
-            "success": False,
-            "message": f"SQL Error: {e}",
-        }
 
     return templates.TemplateResponse(
         "sqli_login.html", {"request": request, "result": result}
@@ -93,22 +94,23 @@ async def sqli_search(request: Request, q: str = "") -> HTMLResponse:
         /sqli/search?q=' UNION SELECT 1,username,password,4,5,6 FROM users--
     """
     conn = get_db()
-    cursor = conn.cursor()
-
     results = []
     error = None
 
-    if q:
-        # VULN: Direct string interpolation in SQL query
-        query = f"SELECT * FROM products WHERE name LIKE '%{q}%' OR description LIKE '%{q}%'"
-        try:
-            cursor.execute(query)
-            results = [dict(row) for row in cursor.fetchall()]
-        except sqlite3.OperationalError as e:
-            # VULN: Verbose error output aids attacker
-            error = f"SQL Error: {e}"
+    try:
+        cursor = conn.cursor()
 
-    conn.close()
+        if q:
+            # VULN: Direct string interpolation in SQL query
+            query = f"SELECT * FROM products WHERE name LIKE '%{q}%' OR description LIKE '%{q}%'"
+            try:
+                cursor.execute(query)
+                results = [dict(row) for row in cursor.fetchall()]
+            except sqlite3.OperationalError as e:
+                # VULN: Verbose error output aids attacker
+                error = f"SQL Error: {e}"
+    finally:
+        conn.close()
 
     return templates.TemplateResponse(
         "sqli_search.html",

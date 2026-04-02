@@ -7,7 +7,7 @@ Challenges:
 
 import httpx
 
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, Header
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
@@ -53,7 +53,6 @@ async def ssrf_fetch(
     No URL validation or allowlisting allows access to internal services:
         http://127.0.0.1:8080/internal/secret
         http://169.254.169.254/latest/meta-data/
-        file:///etc/passwd
     """
     response_data = None
 
@@ -92,8 +91,15 @@ internal_router = APIRouter()
 
 
 @internal_router.get("/internal/secret")
-async def internal_secret() -> JSONResponse:
-    """Simulated internal service - should not be directly accessible."""
+async def internal_secret(request: Request) -> JSONResponse:
+    """Simulated internal service - only accessible via SSRF (localhost requests)."""
+    # Only respond to requests coming from the server itself (SSRF)
+    client_host = request.client.host if request.client else None
+    if client_host not in ("127.0.0.1", "::1", "localhost"):
+        return JSONResponse(
+            {"error": "Forbidden: This service is only accessible internally."},
+            status_code=403,
+        )
     return JSONResponse({
         "service": "internal-api",
         "flag": "FLAG{ssrf_internal_service_accessed}",

@@ -5,7 +5,7 @@ Challenges:
   - Chain commands using ;, |, &&, or $() syntax
 """
 
-import subprocess
+import asyncio
 
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse
@@ -44,14 +44,24 @@ async def cmd_ping(
 
     try:
         # VULN: shell=True allows command injection
-        result = subprocess.run(
+        proc = await asyncio.create_subprocess_shell(
             command,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=10,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
         )
-        output = result.stdout + result.stderr
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=10)
+        except asyncio.TimeoutError:
+            proc.kill()
+            await proc.communicate()
+            output = "Command timed out."
+            flag = None
+            return templates.TemplateResponse(
+                "cmd_ping.html",
+                {"request": request, "output": output, "target": target, "flag": flag},
+            )
+
+        output = stdout.decode() + stderr.decode()
 
         # Check if user injected additional commands
         injection_indicators = [";", "&&", "||", "|", "$(", "`"]
@@ -59,9 +69,6 @@ async def cmd_ping(
         if any(ind in target for ind in injection_indicators):
             flag = "FLAG{command_injection_rce_achieved}"
 
-    except subprocess.TimeoutExpired:
-        output = "Command timed out."
-        flag = None
     except Exception as e:
         output = f"Error: {e}"
         flag = None
