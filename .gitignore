@@ -30,3 +30,7 @@ Thumbs.db
 # Honeypot runtime artifacts
 *.jsonl
 .ssh_host_key
+
+# BREACH vulnerable web app runtime artifacts
+projects/offensive/vulnerable_web_app/breach.db
+projects/offensive/vulnerable_web_app/sandbox_files/
