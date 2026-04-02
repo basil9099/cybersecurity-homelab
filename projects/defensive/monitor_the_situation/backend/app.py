@@ -45,10 +45,18 @@ def create_app(settings: Settings, db: Database) -> FastAPI:
     from backend.api.websocket import hub
     app.state.ws_hub = hub
 
-    # CORS -- allow everything (homelab)
+    # CORS -- permissive for homelab use.
+    # Note: allow_credentials=True requires explicit origins (not "*").
+    # Default to localhost variants; override via CORS_ORIGINS env var.
+    cors_origins = settings.cors_origins or [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ]
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

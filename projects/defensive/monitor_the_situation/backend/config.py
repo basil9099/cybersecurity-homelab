@@ -23,6 +23,9 @@ class Settings:
     host: str = "0.0.0.0"
     port: int = 8000
 
+    # CORS allowed origins (comma-separated). Leave empty for localhost defaults.
+    cors_origins_str: str = ""
+
     # API keys (all optional -- demo mode used when absent)
     nvd_api_key: str = ""
     greynoise_api_key: str = ""
@@ -87,6 +90,11 @@ class Settings:
             self.abuseipdb_api_key,
             self.otx_api_key,
         ])
+
+    @property
+    def cors_origins(self) -> list[str]:
+        """Parse comma-separated CORS origins, or return empty list for defaults."""
+        return [u.strip() for u in self.cors_origins_str.split(",") if u.strip()]
 
     @property
     def rss_feeds(self) -> list[str]:
